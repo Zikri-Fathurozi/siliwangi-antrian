@@ -1,0 +1,88 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background-color: #e8eaee;
+}
+.card {
+  margin-bottom: 2em !important;
+}
+.cstm_header {
+  box-shadow: 0 0.125rem 0.1875rem -0.125rem rgb(0 0 0 / 20%);
+}
+.cstm_header,
+.cstm_footer_app {
+  background: #238b18;
+  padding-top: 20px !important;
+}
+.cstm_header *,
+.cstm_footer_app * {
+  color: #fff !important;
+}
+.cstm_dropdown * {
+  color: rgb(36, 33, 33) !important;
+}
+.cstm_header-brand {
+  color: #fff !important;
+  font-size: 1.6em;
+  text-transform: uppercase;
+}
+.login-header-brand-img {
+  height: 4rem;
+  width: auto;
+}
+.header-brand-img {
+  width: auto;
+  height: 40px;
+}
+.cstm_footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  text-transform: uppercase;
+}
+.cstm_footer h5 {
+  color: #fff;
+  font-size: 2em !important;
+}
+.carousel-banner img {
+  height: 75vh;
+}
+.modal-display-antrian {
+  height: 500px;
+}
+.swal2-container.swal2-shown {
+  background-color: rgb(0 0 0 / 82%) !important;
+}
+.header.app img {
+  width: 10vh !important;
+}
+.header .title {
+  padding-top: 3vh !important;
+}
+.header .title .h1,
+#info_text {
+  font-size: 4vh !important;
+}
+.header .title .h5 {
+  font-size: 2.7vh !important;
+}
+.alert.cstm_footer {
+  bottom: 7vh !important;
+  box-shadow: 10px -1px 10px rgb(0 0 0 / 8%);
+}
+.cstm_footer_app h5 {
+  font-size: 3vh !important;
+  padding-right: 1vh !important;
+  padding-top: 1vh !important;
+}
+
+.banner {
+  height: 61vh !important;
+}
+
+.video {
+  height: 70.5vh !important;
+}

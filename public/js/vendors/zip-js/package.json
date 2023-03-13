@@ -1,0 +1,82 @@
+{
+  "_args": [
+    [
+      "zip-js",
+      "/var/www/html/antrianvue"
+    ]
+  ],
+  "_from": "zip-js@latest",
+  "_id": "zip-js@0.0.2",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/zip-js",
+  "_nodeVersion": "0.12.7",
+  "_npmUser": {
+    "email": "johan.poirier@gmail.com",
+    "name": "dst17"
+  },
+  "_npmVersion": "2.11.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "zip-js",
+    "raw": "zip-js",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/zip-js/-/zip-js-0.0.2.tgz",
+  "_shasum": "e86f30c588de4e4918e8ab73b1aef3e4d85d3ab5",
+  "_shrinkwrap": null,
+  "_spec": "zip-js",
+  "_where": "/var/www/html/antrianvue",
+  "author": {
+    "email": "gildas.lormeau@gmail.com",
+    "name": "Gildas Lormeau",
+    "url": "https://github.com/gildas-lormeau/"
+  },
+  "bugs": {
+    "email": "gildas.lormeau@gmail.com",
+    "url": "https://github.com/gildas-lormeau/zip.js/issues"
+  },
+  "dependencies": {},
+  "description": "A JavaScript library to zip and unzip files",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "e86f30c588de4e4918e8ab73b1aef3e4d85d3ab5",
+    "tarball": "https://registry.npmjs.org/zip-js/-/zip-js-0.0.2.tgz"
+  },
+  "gitHead": "2be6bed14022adf03444e7d2d8923ccad13133d8",
+  "homepage": "https://github.com/gildas-lormeau/zip.js",
+  "keywords": [
+    "zip unzip delate inflate"
+  ],
+  "licenses": [
+    {
+      "type": "BSD-3-Clause",
+      "url": "http://opensource.org/licenses/BSD-3-Clause"
+    }
+  ],
+  "maintainers": [
+    {
+      "name": "dst17",
+      "email": "johan.poirier@gmail.com"
+    }
+  ],
+  "name": "zip-js",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/johanpoirier/zip.js.git"
+  },
+  "scripts": {
+    "echo": "echo \"\"",
+    "env": "env"
+  },
+  "version": "0.0.2"
+}

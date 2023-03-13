@@ -1,0 +1,62 @@
+.page-header {
+  display: -ms-flexbox;
+  display: inline !important;
+  text-align: center;
+}
+.page-header h1 span {
+  background-color: rgb(177, 175, 175);
+  padding: 5px 30px;
+  border-radius: 50px;
+  color: #fff !important;
+}
+.btn-poli {
+  cursor: pointer;
+  transition: width 2s;
+  border: 2px rgb(27, 26, 26) solid;
+  box-shadow: 2px 2px 3px #a29e9e;
+}
+.btn-poli:active {
+  margin-top: 2px !important;
+  margin-bottom: -2px !important;
+}
+.btn-poli-disabled {
+  opacity: 0.5;
+}
+.card-disabled {
+  cursor: default;
+}
+/* modify start*/
+
+.cstm_header,
+.cstm_footer_app {
+  background: rgb(60 181 49) !important;
+}
+.card.bg-success {
+  background-color: rgb(60 181 49) !important;
+}
+.card.bg-primary {
+  background-color: #226670 !important;
+}
+.btn-poli h1 {
+  margin-left: -12px !important;
+  padding: 2px 20px;
+  background-color: #fff;
+  color: #000 !important;
+  border-top-right-radius: 20px;
+}
+
+/* modify end*/
+.btn-tutup {
+  opacity: 0.4;
+}
+.btn-poli:active {
+  background-color: #ccc;
+}
+
+#info_text {
+  font-weight: bold;
+}
+
+.banner-poli {
+  height: 33.5rem;
+}

@@ -1,0 +1,21 @@
+<?php
+
+return [
+  "provider" => "Bedja",
+  "header" => [
+    "name" => "FKTP KLINIK SILIWANGI CIMAHI",
+    "address" =>
+      "Jl. Stasion C3 No.181 Baros Cimahi Tengah Kota Cimahi Jawa Barat 40521",
+  ],
+  "print" => [
+    "has_logo" => true,
+    "name" => "FKTP KLINIK SILIWANGI",
+    "address" => "Jl. Stasion C3 No.181 Baros Cimahi Tengah",
+  ],
+  "umum_prioritas" => true,
+  "multi_loket_pendaftaran" => env("MIX_MULTILOKET_PENDAFTARAN", true),
+  "multi_loket_poli" => false,
+  "online_booking" => [
+    "max_days" => 7,
+  ],
+];

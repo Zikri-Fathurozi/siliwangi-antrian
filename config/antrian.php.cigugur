@@ -1,0 +1,20 @@
+<?php
+
+return [
+  "provider" => "Bedja",
+  "header" => [
+    "name" => "PUSKESMAS CIGUGUR TENGAH CIMAHI",
+    "address" => "Jl. Abdul Halim No. 199 Karangmekar Cimahi Tengah",
+  ],
+  "print" => [
+    "has_logo" => true,
+    "name" => "PUSKESMAS CIGUGUR TENGAH CIMAHI",
+    "address" => "Jl. Abdul Halim No. 199 Karangmekar Cimahi Tengah",
+  ],
+  "umum_prioritas" => false,
+  "multi_loket_pendaftaran" => env("MIX_MULTILOKET_PENDAFTARAN", false),
+  "multi_loket_poli" => false,
+  "online_booking" => [
+    "max_days" => 7,
+  ],
+];
