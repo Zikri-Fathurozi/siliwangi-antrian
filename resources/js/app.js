@@ -36,6 +36,10 @@ Vue.component(
   "ticket-dispenser-component",
   require("./components/TicketDispenserComponent.vue").default
 );
+Vue.component(
+  "ticket-dispenser-new-component",
+  require("./components/TicketDispenserNewComponent.vue").default
+);
 
 if (process.env.MIX_MULTILOKET_PENDAFTARAN === "true") {
   Vue.component(

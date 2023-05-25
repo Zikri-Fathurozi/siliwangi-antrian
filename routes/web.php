@@ -18,6 +18,11 @@ $router
   ->name("ticket.dispenser")
   ->middleware("device.code:tiket");
 
+  $router
+  ->view("/ticket-dispenser-new", "antrian.ticket-dispenser-new")
+  ->name("ticket.dispensernew")
+  ->middleware("device.code:tiket");
+
 $router
   ->view("/display-pendaftaran", "antrian.display-pendaftaran")
   ->name("display.pendaftaran")

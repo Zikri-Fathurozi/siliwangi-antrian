@@ -3024,6 +3024,351 @@ Vue.component("button-poli", {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TicketDispenserNewComponent.vue?vue&type=script&lang=js&":
+/*!**************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/TicketDispenserNewComponent.vue?vue&type=script&lang=js& ***!
+  \**************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _commons_HeaderComponent_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./commons/HeaderComponent.vue */ "./resources/js/components/commons/HeaderComponent.vue");
+/* harmony import */ var _elements_TimeComponent_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./elements/TimeComponent.vue */ "./resources/js/components/elements/TimeComponent.vue");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_3__);
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+
+
+
+
+moment__WEBPACK_IMPORTED_MODULE_3___default.a.locale("id");
+Vue.component("button-poli", {
+  props: ["poli", "polis", "is_prioritas", "nomer_peserta"],
+  template: "\n    <div class=\"col-sm-6 col-md-6 col-poli\" :class=\"Object.keys(polis).length % 4>0? 'col-lg-4' : 'col-lg-6' \" v-if=\"show_poli(poli)\">\n      <div class=\"card btn-poli\" :class=\"'btn_poli'+poli.poli_id + (is_prioritas?' bg-primary' : ' bg-success') + (poli.tutup?' card-disabled' : '')\" @click=\"choose(poli)\">\n        <div class=\"d-flex mt-5 mx-3 mb-2 align-items-center\" :class=\"poli.tutup?'btn-tutup' : ''\"></span>\n          <div>\n            <h1 class=\"m-0 text-white\"> <i :class=\"poli.poli_icon + ' '+ 'text-'+poli.poli_color\" ></i> {{poli.poli_nama}} </h1>\n          </div>\n        </div>\n        \n        <div v-if=\"!poli.tutup\" class=\"card-footer p-0 mx-3 mt-2 pt-1 mb-5\" style=\"border-top: 1px solid rgb(255 255 255 / 52%);\">\n          <div class=\"row align-items-center pt-2 p-0\">\n            <div class=\"col text-white font-weight-bold\" v-if=\"poli.poli_deskripsi!=''\">\n              <span v-html=\"poli.poli_deskripsi\" style=\"font-size:2vh\"></span>\n              <span v-if=\"is_prioritas\" class=\"text-warning h3\" style=\"font-size: 2vh\"><br/><br/> <i class=\"fa fa-lightbulb-o\"></i> KHUSUS LANSIA / PRIORITAS</span>\n              <span v-else><br/></span>\n            </div>\n            <div class=\"col\" v-else>\n              <span v-if=\"is_prioritas\" class=\"text-warning h3\" style=\"font-size: 2vh\"><br/><i class=\"fa fa-lightbulb-o\"></i> KHUSUS LANSIA / PRIORITAS</span>\n              <span v-else><br/></span>\n            </div>\n          </div>\n        </div>\n      \n        <div v-else class=\"card-footer p-0 mt-2 pt-1 pb-3\" style=\"border-top: 1px solid rgb(255 255 255 / 52%);background:#fff\">\n          <div class=\"row align-items-center mx-3 pt-3 p-0\">\n            <div class=\"col font-weight-bold h4\" style=\"font-size: 2vh\" v-if=\"poli.poli_deskripsi!=''\">\n              <i class=\"fa fa-info-circle mr-1 text-warning\"></i>\n              <span v-if=\"poli.buka == 0\">\n                <span v-if=\"poli.timeout\">{{ poli.poli_deskripsi.toUpperCase() }}</span>\n                <span v-else>\n                  HARI INI POLI TUTUP\n                </span>\n              </span>\n              <span v-else>\n                <span v-if=\"poli.sisa_kuota <= 0\">MAAF KUOTA POLI SUDAH HABIS</span>\n              </span>\n              <br/>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n\t\t\t\t  \t",
+  methods: {
+    success_register: function success_register(nomor, poli) {
+      var self = this;
+      $.LoadingOverlay("hide");
+      setTimeout(function () {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire({
+          title: '<b style="color:#0C0CBD;font-size:10vh">' + nomor + "</b>",
+          html: "<b style='font-size:2.5vh'>Silakan ambil tiket Anda</b>",
+          showConfirmButton: false,
+          timer: 3000,
+          imageUrl: "terimakasih.jpg",
+          imageWidth: 180,
+          imageHeight: 25,
+          imageAlt: "Custom image",
+          animation: false
+        });
+        self.$emit("update_sim", nomor, poli);
+        self.$emit("send");
+        self.$emit("printing", nomor, poli);
+        self.$emit("update_kuota");
+        self.$emit("set_prioritas", false);
+        self.$parent.positionDisplay = 0;
+        self.$parent.nomer_peserta = '';
+      }, 200);
+    },
+    show_poli: function show_poli(poli) {
+      var bool = true;
+      if (this.is_prioritas && (poli.poli_prioritas || poli.poli_hide_on_prioritas)) {
+        bool = false;
+      }
+      return bool;
+    },
+    choose: function choose(poli) {
+      var _this = this;
+      if (poli.tutup) return false;
+      if (poli.poli_prioritas === 1) {
+        //pasien lansia
+        this.$emit("set_prioritas", true);
+      } else {
+        $.LoadingOverlay("show");
+        axios.post("api/pendaftaran/register", _objectSpread({
+          is_prioritas: this.is_prioritas,
+          nomer_peserta: this.nomer_peserta
+        }, poli)).then(function (response) {
+          return _this.success_register(response.data, poli);
+        })["finally"](function (response) {
+          return $.LoadingOverlay("hide");
+        });
+      }
+    }
+  }
+});
+/* harmony default export */ __webpack_exports__["default"] = ({
+  components: {
+    TimeComponent: _elements_TimeComponent_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
+    HeaderComponent: _commons_HeaderComponent_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
+  props: ["app_name", "app_address"],
+  data: function data() {
+    return {
+      ws: null,
+      printer: null,
+      service: null,
+      daftar_poli: [],
+      is_prioritas: false,
+      positionDisplay: 0,
+      nomer_peserta: ''
+    };
+  },
+  methods: {
+    typePatient: function typePatient(type) {
+      if (type == 'BPJS') {
+        this.positionDisplay = '1';
+      } else {
+        // UMUM
+        this.positionDisplay = 2;
+      }
+    },
+    checkNumber: function checkNumber(value) {
+      if (this.nomer_peserta.length > 16) {
+        alert('Nomer BPJS(13) / NIK(16) digit melebihi batas!');
+        return;
+      }
+      this.nomer_peserta += value.toString();
+    },
+    resetNumber: function resetNumber() {
+      this.nomer_peserta = '';
+    },
+    searchNumber: function searchNumber() {
+      var _this2 = this;
+      if (this.nomer_peserta.length === 16 || this.nomer_peserta.length === 13) {
+        $(".app_panel").LoadingOverlay("show", {
+          image: "",
+          text: "Mencari pasien..",
+          textColor: "#9C9999"
+        });
+        axios.post(document.head.querySelector('meta[name="base-url"]').content + '/api/get-peserta', {
+          no_asuransi: this.nomer_peserta
+        }, {
+          headers: {
+            "X-Service-Key": document.head.querySelector('meta[name="service-key"]').content
+          }
+        }).then(function (response) {
+          $(".app_panel").LoadingOverlay("hide", true);
+          var peserta = response.data.response;
+          if (response.data.cerrorcode == 'timeout') {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire({
+              icon: 'error',
+              title: 'Pencarian Pasien BPJS',
+              html: response.data.message,
+              showConfirmButton: true
+            });
+          } else {
+            if (peserta == null) {
+              sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire({
+                icon: 'error',
+                title: 'Pencarian Pasien BPJS',
+                html: "Mohon maaf, <br>nomor BPJS anda salah. <br><br>Silahkan mengambil <br>antrian <b style='color:red'>PASIEN BARU</b> <br>untuk melakukan pendaftaran <br>melalui LOKET PENDAFTARAN",
+                confirmButtonText: 'Kembali'
+              }).then(function (result) {
+                _this2.nomer_peserta = '';
+              });
+            } else {
+              if (peserta.ketAktif == 'AKTIF' && peserta.status) {
+                var _peserta$pstPrb, _peserta$pstProl;
+                _this2.nomer_peserta = peserta.noKartu;
+                var pstPrbValue = (_peserta$pstPrb = peserta.pstPrb) !== null && _peserta$pstPrb !== void 0 ? _peserta$pstPrb : 'Bukan';
+                var pstProlValue = (_peserta$pstProl = peserta.pstProl) !== null && _peserta$pstProl !== void 0 ? _peserta$pstProl : 'Bukan';
+                var nama_asuransi = peserta.asuransi.nmAsuransi == null ? 'BPJS Kesehatan' : peserta.asuransi.nmAsuransi;
+                var no_asuransi = peserta.noKartu == null ? '-' : peserta.noKartu;
+                var status_bpjs = peserta.ketAktif;
+                var nama_peserta_bpjs = peserta.nama;
+                var faskes_bpjs = peserta.kdProviderPst.nmProvider;
+                var kelasbpjs = peserta.jnsKelas.nama;
+                var jenisbpjs = peserta.jnsPeserta.nama;
+                var prolanis = pstProlValue + " / " + pstPrbValue;
+                var dataPasien = "\n                  Nomer Asuransi: ".concat(no_asuransi, "<br>\n                  Nama Asuransi: ").concat(nama_asuransi, "<br>\n                  Nama Pasien: ").concat(nama_peserta_bpjs, "<br>\n                  Status BPJS: ").concat(status_bpjs, "<br>\n                  Faskes BPJS: ").concat(faskes_bpjs, "<br>\n                  Kelas: ").concat(kelasbpjs, "<br>\n                  Jenis BPJS: ").concat(jenisbpjs, "<br>\n                  Peserta Prolanis: ").concat(prolanis, "<br>\n                ");
+                sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire({
+                  icon: 'success',
+                  title: 'Data Peseta',
+                  html: dataPasien,
+                  showDenyButton: true,
+                  showCancelButton: true,
+                  confirmButtonText: 'Benar, lanjutkan',
+                  denyButtonText: "Bukan"
+                }).then(function (result) {
+                  if (result.value) {
+                    _this2.positionDisplay = 2;
+                  } else if (result.dismiss == 'cancel') {
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire('Jika data salah, silahkan hubungi petugas', '', 'info');
+                    _this2.positionDisplay = 0;
+                    _this2.nomer_peserta = '';
+                  }
+                });
+              } else if (peserta.ketAktif == 'AKTIF' && !peserta.status) {
+                sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire({
+                  icon: 'error',
+                  title: 'Pencarian Pasien BPJS',
+                  html: "Mohon maaf, <br>Anda sudah terdaftar <br>tetapi faskes BPJS anda di " + peserta.kdProviderPst.nmProvider + ", <BR><BR>Silahkan mengambil antrian <br><b style='color:red'>UMUM/BARU</b> untuk melakukan pendaftaran",
+                  confirmButtonText: 'Kembali'
+                }).then(function (result) {
+                  _this2.nomer_peserta = '';
+                  _this2.positionDisplay = 0;
+                });
+              } else if (peserta.aktif == false) {
+                sweetalert2__WEBPACK_IMPORTED_MODULE_2___default.a.fire({
+                  icon: 'error',
+                  title: 'Pencarian Pasien BPJS',
+                  html: "Anda sudah terdaftar<br> tetapi BPJS anda TIDAK AKTIF, <BR><BR>Silahkan mengambil antrian <br><b style='color:red'>UMUM/BARU</b><br> untuk melakukan pendaftaran",
+                  confirmButtonText: 'Kembali'
+                }).then(function (result) {
+                  _this2.nomer_peserta = '';
+                  _this2.positionDisplay = 0;
+                });
+              }
+            }
+          }
+        })["catch"](function (response) {});
+      } else {
+        alert('Nomer kartu harus digit BPJS(13) / NIK(16)');
+        return;
+      }
+    },
+    send: function send() {
+      this.ws.send(JSON.stringify({
+        target: "loket",
+        sub_target: "pendaftaran",
+        action: "add_new"
+      }));
+      this.ws.send(JSON.stringify({
+        target: "display",
+        sub_target: "pendaftaran",
+        action: "update_summary"
+      }));
+    },
+    set_prioritas: function set_prioritas(bool) {
+      this.is_prioritas = bool;
+    },
+    check_buka: function check_buka() {
+      for (var x in this.daftar_poli) {
+        this.daftar_poli[x].tutup = true;
+        if (this.daftar_poli[x].buka > 0 && this.daftar_poli[x].sisa_kuota > 0) {
+          this.daftar_poli[x].tutup = false;
+        }
+      }
+      this.check_jam_tutup();
+    },
+    check_jam_tutup: function check_jam_tutup() {
+      var self = this;
+      var i = 1;
+      setInterval(function () {
+        for (var x in self.daftar_poli) {
+          if (self.daftar_poli[x].buka > 0) {
+            var id = self.daftar_poli[x].poli_id;
+            var time = self.daftar_poli[x].poli_closehour;
+            var hours = time.split(":");
+            var timeNow = new Date();
+            var jam = parseInt(hours[0], 10);
+            var menit = parseInt(hours[1], 10);
+            var timeNow = new Date();
+            var timePoli = new Date(timeNow.getFullYear(), timeNow.getMonth(), timeNow.getDate(), jam, menit);
+            if (timeNow > timePoli) {
+              self.daftar_poli[x].tutup = true;
+              self.daftar_poli[x].buka = 0;
+              self.daftar_poli[x].poli_deskripsi = "waktu pelayanan habis";
+              self.daftar_poli[x].timeout = true;
+            }
+          }
+        }
+        i++;
+      }, 1000);
+    },
+    printing: function printing(number, poli) {
+      axios.post("".concat(this.printer.printer_url_service, "/register"), {
+        poli_nama: poli.poli_nama,
+        tiket_nomor: number,
+        prioritas: this.is_prioritas,
+        printer_alias: this.printer.printer_alias,
+        date: moment__WEBPACK_IMPORTED_MODULE_3___default()().format("dddd, Do MMMM YYYY H:mm:ss")
+      }, {
+        headers: {
+          "X-Service-Key": document.head.querySelector('meta[name="service-key"]').content
+        }
+      }).then(function (response) {})["catch"](function (response) {});
+    },
+    update_sim: function update_sim(nomor, poli) {
+      if (this.service.service_enabled) {
+        axios.post("".concat(this.service.service_url, "/gateway/save"), {
+          poli_id: poli.poli_id,
+          tipe_antrian_id: poli.poli_id,
+          nomor: nomor
+        }).then(function (response) {
+          return console.log(response);
+        });
+      }
+    },
+    init_data: function init_data() {
+      var _this3 = this;
+      var self = this;
+      axios.post("api/poli/list-menu").then(function (response) {
+        return self.daftar_poli = response.data, self.check_buka();
+      });
+      axios.post("api/printer/key/tiket").then(function (response) {
+        _this3.printer = response.data.res;
+      });
+      axios.post("api/service/key/sim").then(function (response) {
+        _this3.service = response.data.res;
+        console.log(response.data.res);
+      });
+    },
+    ws_error_message: function ws_error_message() {
+      $(".app_panel").LoadingOverlay("show", {
+        image: "",
+        text: "koneksi socket server terputus, hubungi wawicom.",
+        textColor: "#9C9999"
+      });
+    },
+    ws_connect: function ws_connect() {
+      var self = this;
+      self.init_data();
+      this.ws = new WebSocket(document.head.querySelector('meta[name="web-socket"]').content);
+      this.ws.onopen = function () {
+        // $(".app_panel").LoadingOverlay("hide", true);
+        self.init_data();
+      };
+      this.ws.onclose = function (e) {
+        self.ws_error_message();
+        setTimeout(function () {
+          self.ws_connect();
+        }, 3000);
+      };
+      this.ws.onerror = function (err) {
+        self.ws_error_message();
+        self.ws.close();
+      };
+      this.ws.onmessage = function (e) {
+        var data = JSON.parse(e.data);
+        if (data.target == "tiket_dispenser") {
+          self.init_data();
+          if (data.action == "refresh_browser") {
+            location.reload(true);
+          }
+        }
+      };
+    }
+  },
+  created: function created() {
+    var self = this;
+    this.ws_connect();
+    var body = document.querySelector("body");
+    body.classList.add("ticket-dispenser");
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/ReportAntrianComponent.vue?vue&type=script&lang=js&":
 /*!***************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/ReportAntrianComponent.vue?vue&type=script&lang=js& ***!
@@ -5564,6 +5909,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     fetchBuffers: function fetchBuffers() {
       var _this2 = this;
+      console.log('Masuk', this.base_url);
       var audios = this.audios_name.map(function (name) {
         return "".concat(_this2.base_url, "/audios/").concat(_this2.voice, "/audio_").concat(name, ".mp3");
       });
@@ -7461,6 +7807,444 @@ var render = function render() {
   }, [_c("time-component")], 1)])])])])]);
 };
 var staticRenderFns = [function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "d-flex mt-5 mx-3 mb-2 align-items-center"
+  }, [_c("h1", {
+    staticClass: "m-0"
+  }, [_c("i", {
+    staticClass: "fa fa-chevron-circle-right text-white"
+  }), _vm._v("\n                      KEMBALI\n                    ")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "card-footer p-0 mx-3 mt-2 pt-1 mb-5"
+  }, [_c("div", {
+    staticClass: "row align-items-center pt-2 p-0 pb-4"
+  }, [_c("div", {
+    staticClass: "col d-flex",
+    staticStyle: {
+      "font-size": "2vh"
+    }
+  }, [_c("b", [_vm._v("Bukan pasien Lansia / Prioritas? "), _c("br"), _vm._v("Klik tombol\n                          ini untuk kembali")]), _vm._v(" "), _c("i", {
+    staticClass: "fa fa-chevron-circle-right text-success d-block ml-auto",
+    staticStyle: {
+      "font-size": "3em!important"
+    }
+  })])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "col-sm-12"
+  }, [_c("br")]);
+}];
+render._withStripped = true;
+
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TicketDispenserNewComponent.vue?vue&type=template&id=910a3e6a&":
+/*!************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/TicketDispenserNewComponent.vue?vue&type=template&id=910a3e6a& ***!
+  \************************************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function render() {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "page"
+  }, [_c("div", {
+    staticClass: "page-main"
+  }, [_c("header-component", {
+    attrs: {
+      app_name: _vm.app_name,
+      app_address: _vm.app_address
+    }
+  }), _vm._v(" "), _c("div", {
+    staticClass: "my-3 my-md-5 app_panel"
+  }, [_c("div", {}, [_vm._m(0), _vm._v(" "), _c("div", {
+    staticClass: "row row-cards justify-content-lg-center"
+  }, [_c("div", {
+    staticClass: "col-lg-12"
+  }, [_vm.positionDisplay == "0" ? _c("div", {
+    staticClass: "col-lg-10 offset-lg-1"
+  }, [_c("div", {
+    staticClass: "row"
+  }, [_c("div", {
+    staticClass: "col-sm-6 col-lg-6 align-self-center"
+  }, [_c("div", {
+    staticClass: "card mx-auto target-type-patient",
+    staticStyle: {
+      width: "18rem"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.typePatient("BPJS");
+      }
+    }
+  }, [_vm._m(1), _vm._v(" "), _vm._m(2)])]), _vm._v(" "), _c("div", {
+    staticClass: "col-sm-6 col-lg-6 align-self-center"
+  }, [_c("div", {
+    staticClass: "card mx-auto target-type-patient",
+    staticStyle: {
+      width: "18rem"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.typePatient("UMUM");
+      }
+    }
+  }, [_vm._m(3), _vm._v(" "), _vm._m(4)])])])]) : _vm._e(), _vm._v(" "), _vm.positionDisplay == "1" ? _c("div", {
+    staticClass: "col-lg-10 offset-lg-1"
+  }, [_c("div", {
+    staticClass: "row"
+  }, [_c("div", {
+    staticClass: "col-md-6 col-md-offset-1 mx-auto",
+    staticStyle: {
+      "min-height": "100vh"
+    }
+  }, [_vm._m(5), _vm._v(" "), _vm._m(6), _vm._v(" "), _c("br"), _vm._v(" "), _c("div", {
+    staticClass: "row"
+  }, [_c("div", {
+    staticClass: "col-sm-12 text-center"
+  }, [_c("h3", [_c("b", [_vm._v(_vm._s(_vm.app_name))])])]), _vm._v(" "), _vm._m(7), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-12",
+    staticStyle: {
+      padding: "0px 50px 0px 50px"
+    }
+  }, [_c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.nomer_peserta,
+      expression: "nomer_peserta"
+    }],
+    staticClass: "form-control input-big text-center",
+    attrs: {
+      type: "text",
+      autocomplete: "off"
+    },
+    domProps: {
+      value: _vm.nomer_peserta
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.nomer_peserta = $event.target.value;
+      }
+    }
+  })])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-md-6 mx-auto",
+    staticStyle: {
+      "min-height": "100vh"
+    }
+  }, [_c("div", {
+    staticClass: "d-flex justify-content-center",
+    staticStyle: {
+      "padding-top": "8%"
+    }
+  }, [_c("div", {
+    staticClass: "buttons mx-auto"
+  }, [_c("div", {
+    staticClass: "row"
+  }, [_c("input", {
+    staticClass: "btn btn-lg btn-number btn-number-white shadow-button",
+    attrs: {
+      type: "button",
+      name: "b7",
+      value: "7"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.checkNumber(7);
+      }
+    }
+  }), _vm._v(" "), _c("input", {
+    staticClass: "btn btn-lg btn-number btn-number-white shadow-button",
+    attrs: {
+      type: "button",
+      name: "b8",
+      value: "8"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.checkNumber(8);
+      }
+    }
+  }), _vm._v(" "), _c("input", {
+    staticClass: "btn btn-lg btn-number btn-number-white shadow-button",
+    attrs: {
+      type: "button",
+      name: "b9",
+      value: "9"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.checkNumber(9);
+      }
+    }
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "row"
+  }, [_c("input", {
+    staticClass: "btn btn-lg btn-number btn-number-white shadow-button",
+    attrs: {
+      type: "button",
+      name: "b4",
+      value: "4"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.checkNumber(4);
+      }
+    }
+  }), _vm._v(" "), _c("input", {
+    staticClass: "btn btn-lg btn-number btn-number-white shadow-button",
+    attrs: {
+      type: "button",
+      name: "b5",
+      value: "5"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.checkNumber(5);
+      }
+    }
+  }), _vm._v(" "), _c("input", {
+    staticClass: "btn btn-lg btn-number btn-number-white shadow-button",
+    attrs: {
+      type: "button",
+      name: "b6",
+      value: "6"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.checkNumber(6);
+      }
+    }
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "row"
+  }, [_c("input", {
+    staticClass: "btn btn-lg btn-number btn-number-white shadow-button",
+    attrs: {
+      type: "button",
+      name: "b1",
+      value: "1"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.checkNumber(1);
+      }
+    }
+  }), _vm._v(" "), _c("input", {
+    staticClass: "btn btn-lg btn-number btn-number-white shadow-button",
+    attrs: {
+      type: "button",
+      name: "b2",
+      value: "2"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.checkNumber(2);
+      }
+    }
+  }), _vm._v(" "), _c("input", {
+    staticClass: "btn btn-lg btn-number btn-number-white shadow-button",
+    attrs: {
+      type: "button",
+      name: "b3",
+      value: "3"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.checkNumber(3);
+      }
+    }
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "row"
+  }, [_c("button", {
+    staticClass: "btn btn-lg b_cari btn-big btn-warning shadow-action",
+    attrs: {
+      type: "button"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.resetNumber();
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-arrow-left",
+    attrs: {
+      id: "icon-size"
+    }
+  })]), _vm._v(" "), _c("input", {
+    staticClass: "btn btn-lg btn-number btn-number-white shadow-button",
+    attrs: {
+      type: "button",
+      name: "b0",
+      value: "0"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.checkNumber(0);
+      }
+    }
+  }), _vm._v(" "), _c("button", {
+    staticClass: "btn btn-lg b_cari btn-big btn-warning shadow-action",
+    attrs: {
+      type: "button"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.searchNumber();
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-search",
+    attrs: {
+      id: "icon-size"
+    }
+  })])])])])])])]) : _vm._e(), _vm._v(" "), _vm.positionDisplay == "2" ? _c("div", {
+    staticClass: "row row-cards"
+  }, [_vm._l(_vm.daftar_poli, function (poli) {
+    return _c("button-poli", {
+      key: poli.id,
+      attrs: {
+        polis: _vm.daftar_poli,
+        poli: poli,
+        is_prioritas: _vm.is_prioritas,
+        nomer_peserta: _vm.nomer_peserta
+      },
+      on: {
+        send: _vm.send,
+        update_sim: _vm.update_sim,
+        printing: _vm.printing,
+        update_kuota: _vm.init_data,
+        set_prioritas: _vm.set_prioritas
+      }
+    });
+  }), _vm._v(" "), _vm.is_prioritas ? _c("div", {
+    staticClass: "col-sm-6 col-md-6 col-poli",
+    "class": Object.keys(_vm.daftar_poli).length % 4 > 0 ? "col-lg-4" : "col-lg-6"
+  }, [_c("div", {
+    staticClass: "card btn-poli",
+    on: {
+      click: function click($event) {
+        return _vm.set_prioritas(false);
+      }
+    }
+  }, [_vm._m(8), _vm._v(" "), _vm._m(9)])]) : _vm._e()], 2) : _vm._e()]), _vm._v(" "), _vm._m(10)])])])], 1), _vm._v(" "), _c("footer", {
+    staticClass: "footer cstm_footer_app",
+    staticStyle: {
+      position: "fixed",
+      left: "0",
+      bottom: "0",
+      width: "100%"
+    }
+  }, [_c("div", {
+    staticClass: "container"
+  }, [_c("div", {
+    staticClass: "row align-items-center"
+  }, [_c("div", {
+    staticClass: "col-auto"
+  }), _vm._v(" "), _c("div", {
+    staticClass: "col-12 mt-2 mt-lg-0 text-center"
+  }, [_c("h5", {
+    staticStyle: {
+      color: "#495057",
+      "font-size": "3.5vh!important",
+      "text-transform": "uppercase",
+      "margin-bottom": "-2px"
+    }
+  }, [_c("time-component")], 1)])])])])]);
+};
+var staticRenderFns = [function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "page-header"
+  }, [_c("h1", {
+    staticStyle: {
+      "font-size": "4.3vh"
+    }
+  }, [_c("b", [_c("span", [_vm._v("\n              ANTREAN PENDAFTARAN\n              ")])])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "icon-pasien"
+  }, [_c("img", {
+    staticClass: "card-img-top img-fluid",
+    attrs: {
+      src: "bpjs-logo.png",
+      alt: "..."
+    }
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "card-body text-center"
+  }, [_c("h1", [_vm._v("BPJS LAMA")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "icon-pasien"
+  }, [_c("img", {
+    staticClass: "card-img-top img-fluid",
+    attrs: {
+      src: "logo-umum.png",
+      alt: "..."
+    }
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "card-body text-center"
+  }, [_c("h1", [_vm._v("UMUM/BARU")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("h4", [_c("a", {
+    attrs: {
+      href: "/ticket-dispenser"
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-arrow-left"
+  }), _vm._v(" "), _c("b", [_vm._v("Kembali")])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "row d-flex justify-content-center padding-50"
+  }, [_c("img", {
+    attrs: {
+      src: "logo.png",
+      width: "20%",
+      id: "logo_antrean"
+    }
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "col-sm-12 text-center"
+  }, [_c("p", [_c("i", {
+    attrs: {
+      id: "infoText"
+    }
+  }, [_vm._v("Silahkan Scan Kartu BPJS Anda atau Ketik Nomor BPJS / No. KTP")])])]);
+}, function () {
   var _vm = this,
     _c = _vm._self._c;
   return _c("div", {
@@ -104302,6 +105086,7 @@ Vue.component("loket-pendaftaran-component", __webpack_require__(/*! ./component
 Vue.component("loket-poli-component", __webpack_require__(/*! ./components/LoketPoliComponent.vue */ "./resources/js/components/LoketPoliComponent.vue")["default"]);
 Vue.component("loket-tensi-component", __webpack_require__(/*! ./components/LoketTensiComponent.vue */ "./resources/js/components/LoketTensiComponent.vue")["default"]);
 Vue.component("ticket-dispenser-component", __webpack_require__(/*! ./components/TicketDispenserComponent.vue */ "./resources/js/components/TicketDispenserComponent.vue")["default"]);
+Vue.component("ticket-dispenser-new-component", __webpack_require__(/*! ./components/TicketDispenserNewComponent.vue */ "./resources/js/components/TicketDispenserNewComponent.vue")["default"]);
 if (true) {
   Vue.component("display-pendaftaran-component", __webpack_require__(/*! ./components/displays/multiloket/DisplayPendaftaranComponent.vue */ "./resources/js/components/displays/multiloket/DisplayPendaftaranComponent.vue")["default"]);
 } else {}
@@ -104684,6 +105469,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_TicketDispenserComponent_vue_vue_type_template_id_50998142___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_TicketDispenserComponent_vue_vue_type_template_id_50998142___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/TicketDispenserNewComponent.vue":
+/*!*****************************************************************!*\
+  !*** ./resources/js/components/TicketDispenserNewComponent.vue ***!
+  \*****************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _TicketDispenserNewComponent_vue_vue_type_template_id_910a3e6a___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TicketDispenserNewComponent.vue?vue&type=template&id=910a3e6a& */ "./resources/js/components/TicketDispenserNewComponent.vue?vue&type=template&id=910a3e6a&");
+/* harmony import */ var _TicketDispenserNewComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TicketDispenserNewComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/TicketDispenserNewComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _TicketDispenserNewComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _TicketDispenserNewComponent_vue_vue_type_template_id_910a3e6a___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _TicketDispenserNewComponent_vue_vue_type_template_id_910a3e6a___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/TicketDispenserNewComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/TicketDispenserNewComponent.vue?vue&type=script&lang=js&":
+/*!******************************************************************************************!*\
+  !*** ./resources/js/components/TicketDispenserNewComponent.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_TicketDispenserNewComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./TicketDispenserNewComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TicketDispenserNewComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_TicketDispenserNewComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/TicketDispenserNewComponent.vue?vue&type=template&id=910a3e6a&":
+/*!************************************************************************************************!*\
+  !*** ./resources/js/components/TicketDispenserNewComponent.vue?vue&type=template&id=910a3e6a& ***!
+  \************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_TicketDispenserNewComponent_vue_vue_type_template_id_910a3e6a___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!../../../node_modules/vue-loader/lib??vue-loader-options!./TicketDispenserNewComponent.vue?vue&type=template&id=910a3e6a& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TicketDispenserNewComponent.vue?vue&type=template&id=910a3e6a&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_TicketDispenserNewComponent_vue_vue_type_template_id_910a3e6a___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_TicketDispenserNewComponent_vue_vue_type_template_id_910a3e6a___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
@@ -106474,11 +107328,15 @@ function terbilang(a) {
     var belakang = a % 1000000000000000;
     var kalimat = terbilang(depan) + " Kuadriliun " + terbilang(belakang);
   }
-  var pisah = kalimat.replace(",", " ").split(" ");
+  console.log(kalimat);
   var full = [];
-  for (var i = 0; i < pisah.length; i++) {
-    if (pisah[i] != "") {
-      full.push(pisah[i].toLowerCase());
+  if (kalimat) {
+    var pisah = kalimat.replace(",", " ").split(" ");
+    console.log(pisah);
+    for (var i = 0; i < pisah.length; i++) {
+      if (pisah[i] != "") {
+        full.push(pisah[i].toLowerCase());
+      }
     }
   }
   return full;

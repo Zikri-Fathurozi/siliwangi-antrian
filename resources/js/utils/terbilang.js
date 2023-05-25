@@ -138,11 +138,15 @@ export default function terbilang(a) {
     var kalimat = terbilang(depan) + " Kuadriliun " + terbilang(belakang);
   }
 
-  var pisah = kalimat.replace(",", " ").split(" ");
+  console.log(kalimat)
   var full = [];
-  for (var i = 0; i < pisah.length; i++) {
-    if (pisah[i] != "") {
-      full.push(pisah[i].toLowerCase());
+  if (kalimat) {
+    var pisah = kalimat.replace(",", " ").split(" ");
+    console.log(pisah)
+    for (var i = 0; i < pisah.length; i++) {
+      if (pisah[i] != "") {
+        full.push(pisah[i].toLowerCase());
+      }
     }
   }
   return full;

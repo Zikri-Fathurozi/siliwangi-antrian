@@ -15,8 +15,8 @@ class CreateTableTiket extends Migration
   public function up()
   {
     Schema::create("ant_tiket", function (Blueprint $table) {
-      $table->softDeletes();
       $table->string("tiket_id", 100)->primary();
+      $table->softDeletes();
       $table->string("tiket_nomor", 10)->nullable();
       // $table->integer('tiket_call',11)->nullable();
       $table->dateTime("tiket_call_datetime")->nullable();

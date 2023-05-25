@@ -22,6 +22,8 @@ $router->post("poli/list-menu", "PoliController@list_menu");
 $router->post("pendaftaran/register", "PendaftaranController@register");
 $router->post("printer/key/{printer_code}", "PrinterController@key");
 $router->post("service/key/{service_code}", "ServiceController@key");
+
+$router->post('get-peserta', 'Api\BridgingBpjsController@getPeserta')->name('bridgingbpjs.getpeserta');
 //@end-ticket-dispenser
 
 //@display

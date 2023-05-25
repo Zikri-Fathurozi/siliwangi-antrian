@@ -86,3 +86,54 @@ body {
 .video {
   height: 70.5vh !important;
 }
+
+/* SOURCE NEW 20 Jan 2023 */
+.target-type-patient {
+  cursor: pointer;
+}
+.icon-pasien {
+  padding: 50px;
+}
+
+.btn-number {
+  margin: 7px;
+  padding: 0px 25px;
+  font-size: 40px !important;
+  font-family: Calibri !important;;
+  font-weight: bold;
+  color: black;
+  background-color: #238b18;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  /* border-bottom: 1px solid #494949; */
+}
+
+.btn-big {
+  margin: 7px;
+  padding: 0px 28.5px;
+  font-family: Calibri !important;;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
+
+.btn-number-white {
+  color: white;
+}
+
+.btn-number-white:hover {
+  background-color: white;
+  color: black;
+}
+
+.input-big {
+  font-size: 24px;
+  border-radius: 10px;
+}

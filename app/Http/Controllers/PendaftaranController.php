@@ -83,16 +83,13 @@ class PendaftaranController extends BasePendaftaranController
   {
     $poli_id = $request->get("poli_id");
     $is_prioritas = $request->get("is_prioritas");
+    $nomer_peserta = $request->get("nomer_peserta");
     $success = true;
     $error = 0;
     $tiket_date = date("Y-m-d");
 
     do {
-      $nomor_antri_poli = $this->get_nomor_poli(
-        $poli_id,
-        $is_prioritas,
-        $tiket_date
-      );
+      $nomor_antri_poli = $this->get_nomor_poli($poli_id, $is_prioritas, $tiket_date);
       try {
         $tiket = [
           "tiket_id" => Uuid::uuid1(),
@@ -101,6 +98,7 @@ class PendaftaranController extends BasePendaftaranController
           "tiket_poli_id" => $poli_id,
           "tiket_date" => $tiket_date,
           "tiket_prioritas" => $is_prioritas ? 1 : 0,
+          "tiket_pasien_asuransi" => $nomer_peserta
         ];
 
         // jika sebelum masuk poli tersebut harus masuk ruang tensi dahulu

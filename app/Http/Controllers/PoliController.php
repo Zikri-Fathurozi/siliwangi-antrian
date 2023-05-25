@@ -322,9 +322,12 @@ class PoliController extends Controller
         ->join("ant_poli", "ant_tiket.tiket_poli_id", "ant_poli.poli_id")
         ->where(["tiket_poli_id" => Auth::user()->poli])
         ->where("tiket_prioritas", "0")
-        ->where("tiket_status", "1")
-        ->where("tiket_tensi_status", "1")
-        ->where(
+        ->where("tiket_status", "1");
+      
+        if (Auth::user()->poli == $this->poli_umum_id) {
+          $data = $data->where("tiket_tensi_status", "1");
+        }
+        $data = $data->where(
           DB::raw('DATE_FORMAT(tiket_accepted,"%Y-%m-%d")'),
           date("Y-m-d")
         )
