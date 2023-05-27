@@ -13,10 +13,12 @@ class CreateAntChannelTable extends Migration
    */
   public function up()
   {
-    Schema::create("ant_channel", function (Blueprint $table) {
-      $table->bigIncrements("channel_id");
-      $table->string("channel_nama", 225)->unique();
-    });
+    if (!Schema::hasTable('ant_channel')) {
+      Schema::create("ant_channel", function (Blueprint $table) {
+        $table->bigIncrements("channel_id");
+        $table->string("channel_nama", 225)->unique();
+      });
+    }
   }
 
   /**
@@ -26,6 +28,8 @@ class CreateAntChannelTable extends Migration
    */
   public function down()
   {
-    Schema::dropIfExists("ant_channel");
+    if (Schema::hasTable('ant_channel')) {
+      Schema::dropIfExists("ant_channel");
+    }
   }
 }

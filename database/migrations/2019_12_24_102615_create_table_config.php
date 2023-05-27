@@ -13,12 +13,14 @@ class CreateTableConfig extends Migration
      */
     public function up()
     {
-        Schema::create('ant_config', function (Blueprint $table) {
-            $table->string('config_key',100)->primary();
-            $table->string('config_value',100)->nullable();
-            $table->string('config_modifier',100)->nullable();
-            $table->dateTime('config_modified')->nullable();
-        });
+        if (!Schema::hasTable('ant_config')) {
+            Schema::create('ant_config', function (Blueprint $table) {
+                $table->string('config_key',100)->primary();
+                $table->string('config_value',100)->nullable();
+                $table->string('config_modifier',100)->nullable();
+                $table->dateTime('config_modified')->nullable();
+            });
+        }
     }
 
     /**
@@ -28,6 +30,8 @@ class CreateTableConfig extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ant_config');
+        if (Schema::hasTable('ant_config')) {
+            Schema::dropIfExists('ant_config');
+        }
     }
 }

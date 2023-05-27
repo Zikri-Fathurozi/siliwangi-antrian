@@ -13,15 +13,17 @@ class CreateAntDeviceTable extends Migration
    */
   public function up()
   {
-    Schema::create("ant_device", function (Blueprint $table) {
-      $table->bigIncrements("device_id");
-      $table->string("device_nama", 100);
-      $table->string("device_ip", 100);
-      $table->string("device_modifier", 100);
-      $table->dateTime("device_modified")->nullable();
-      $table->string("device_code", 100);
-      $table->string("device_group", 100)->nullable();
-    });
+    if (!Schema::hasTable('ant_device')) {
+      Schema::create("ant_device", function (Blueprint $table) {
+        $table->bigIncrements("device_id");
+        $table->string("device_nama", 100);
+        $table->string("device_ip", 100);
+        $table->string("device_modifier", 100);
+        $table->dateTime("device_modified")->nullable();
+        $table->string("device_code", 100);
+        $table->string("device_group", 100)->nullable();
+      });
+    }
   }
 
   /**
@@ -31,6 +33,8 @@ class CreateAntDeviceTable extends Migration
    */
   public function down()
   {
-    Schema::dropIfExists("ant_device");
+    if (Schema::hasTable('ant_device')) {
+      Schema::dropIfExists("ant_device");
+    }
   }
 }

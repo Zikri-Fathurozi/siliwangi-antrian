@@ -13,15 +13,17 @@ class CreateTableInfo extends Migration
      */
     public function up()
     {
-        Schema::create('ant_info', function (Blueprint $table) {
-            $table->bigIncrements('info_id');
-            $table->string('info_text',100)->nullable();
-            $table->string('info_status',100)->nullable();
-            $table->string('info_author',100)->nullable();
-            $table->dateTime('info_created')->nullable();
-            $table->string('info_modifier',100)->nullable();
-            $table->dateTime('info_modified')->nullable();
-        });
+        if (!Schema::hasTable('ant_info')) {
+            Schema::create('ant_info', function (Blueprint $table) {
+                $table->bigIncrements('info_id');
+                $table->string('info_text',100)->nullable();
+                $table->string('info_status',100)->nullable();
+                $table->string('info_author',100)->nullable();
+                $table->dateTime('info_created')->nullable();
+                $table->string('info_modifier',100)->nullable();
+                $table->dateTime('info_modified')->nullable();
+            });
+        }
     }
 
     /**
@@ -31,6 +33,8 @@ class CreateTableInfo extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ant_info');
+        if (Schema::hasTable('ant_info')) {
+            Schema::dropIfExists('ant_info');
+        }
     }
 }

@@ -13,17 +13,19 @@ class CreateTableBanner extends Migration
    */
   public function up()
   {
-    Schema::create("ant_banner", function (Blueprint $table) {
-      $table->bigIncrements("banner_id");
-      $table->string("banner_path", 225)->nullable();
-      $table->string("banner_type", 100)->nullable();
-      $table->string("banner_title", 100)->nullable();
-      $table->string("banner_desc", 100)->nullable();
-      $table->string("banner_author", 100)->nullable();
-      $table->dateTime("banner_created")->nullable();
-      $table->char("banner_status", 1)->nullable();
-      $table->string("banner_mime", 100)->nullable();
-    });
+    if (!Schema::hasTable('ant_banner')) {
+      Schema::create("ant_banner", function (Blueprint $table) {
+        $table->bigIncrements("banner_id");
+        $table->string("banner_path", 225)->nullable();
+        $table->string("banner_type", 100)->nullable();
+        $table->string("banner_title", 100)->nullable();
+        $table->string("banner_desc", 100)->nullable();
+        $table->string("banner_author", 100)->nullable();
+        $table->dateTime("banner_created")->nullable();
+        $table->char("banner_status", 1)->nullable();
+        $table->string("banner_mime", 100)->nullable();
+      });
+    }
   }
 
   /**
@@ -33,6 +35,8 @@ class CreateTableBanner extends Migration
    */
   public function down()
   {
-    Schema::dropIfExists("ant_banner");
+    if (Schema::hasTable('ant_banner')) {
+      Schema::dropIfExists("ant_banner");
+    }
   }
 }
