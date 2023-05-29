@@ -25,6 +25,8 @@ class UsersController extends Controller
       "users.poli",
       "users.loket",
       "users.prioritas",
+      "users.tensi",
+      "users.nomor_kamar",
       DB::raw('IFNULL(ant_poli.poli_nama, "-") AS poli_nama'),
     ])
       ->with(["user_role"])

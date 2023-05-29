@@ -28,6 +28,10 @@ Vue.component(
   require("./components/LoketPoliComponent.vue").default
 );
 Vue.component(
+  "loket-kamar-component",
+  require("./components/LoketKamarComponent.vue").default
+);
+Vue.component(
   "loket-tensi-component",
   require("./components/LoketTensiComponent.vue").default
 );

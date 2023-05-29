@@ -24,6 +24,8 @@ class User extends Authenticatable implements JWTSubject
     "role",
     "loket",
     "prioritas",
+    'tensi',
+    'nomor_kamar'
   ];
 
   /**

@@ -28,6 +28,7 @@ class Tiket extends Model
     "tiket_pasien_keluhan",
     "tiket_deleted",
     "tiket_channel_id",
+    'kamar_poli'
   ];
 
   protected $dataTableColumns = [

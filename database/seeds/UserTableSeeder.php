@@ -59,6 +59,15 @@ class UserTableSeeder extends Seeder
       ]);
     }
 
+    $role = Role::where("role_id", "kamar")->first();
+    if (!$role) {
+      Role::create([
+        "role_id" => "kamar",
+        "role_nama" => "Kamar",
+        "role_deskripsi" => "Kamar",
+      ]);
+    }
+
     $user = User::where("email", "superadmin@email.com")->first();
     if (!$user) {
       User::create([

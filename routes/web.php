@@ -46,6 +46,10 @@ $router->group(["middleware" => ["auth"]], function ($router) {
     ->view("/loket/poli", "loket.poli")
     ->middleware("role:poli")
     ->name("loket.poli");
+    $router
+    ->view("/loket/kamar", "loket.kamar")
+    ->middleware("role:kamar")
+    ->name("loket.kamar");
   $router
     ->view("/loket/tensi", "loket.tensi")
     ->middleware("role:tensi")

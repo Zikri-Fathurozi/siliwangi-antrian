@@ -35,6 +35,8 @@ class HomeController extends Controller
       return redirect()->route("loket.poli");
     } elseif ($role == "tensi") {
       return redirect()->route("loket.tensi");
+    } elseif ($role == "kamar") {
+      return redirect()->route("loket.kamar");
     } else {
       return abort(404);
     }

@@ -146,6 +146,17 @@
                         <input
                           type="radio"
                           name="role"
+                          value="kamar"
+                          class="selectgroup-input"
+                          @click="handleSelectRole"
+                          v-model="userSelected.role"
+                        />
+                        <span class="selectgroup-button">Ruangan/Kamar</span>
+                      </label>
+                      <label class="selectgroup-item">
+                        <input
+                          type="radio"
+                          name="role"
                           value="tensi"
                           class="selectgroup-input"
                           @click="handleSelectRole"
@@ -214,8 +225,7 @@
                       :disabled="!show_tensi_options"
                       class="form-control custom-select"
                       :class="invalidPoli ? 'is-invalid' : ''"
-                      v-model="userSelected.tensi"
-                    >
+                      v-model="userSelected.tensi">
                       <option
                         v-for="p in tensi"
                         :value="p.poli_id"
@@ -231,8 +241,7 @@
 
                 <div
                   class="col-md-12"
-                  v-show="userSelected.role === 'pendaftaran'"
-                >
+                  v-show="userSelected.role === 'pendaftaran'">
                   <div class="form-group">
                     <label class="custom-switch">
                       <input
@@ -251,8 +260,7 @@
 
                 <div
                   class="col-md-12"
-                  v-show="userSelected.role === 'pendaftaran'"
-                >
+                  v-show="userSelected.role === 'pendaftaran'">
                   <div class="form-group">
                     <label class="form-label"
                       >Loket
@@ -274,8 +282,7 @@
                       "
                       class="form-control custom-select"
                       :class="invalidLoket ? 'is-invalid' : ''"
-                      v-model="userSelected.loket"
-                    >
+                      v-model="userSelected.loket">
                       <option
                         :value="l.loket_id"
                         v-for="l in loket"
@@ -291,8 +298,7 @@
 
                 <div
                   class="col-md-12"
-                  v-show="userSelected.role === 'pendaftaran'"
-                >
+                  v-show="userSelected.role === 'pendaftaran'">
                   <div class="form-group">
                     <label class="custom-switch">
                       <input
@@ -312,6 +318,56 @@
                     </label>
                   </div>
                 </div>
+
+                <!-- Kamar -->
+                <div class="col-md-12" v-show="show_kamar_options">
+                  <div class="form-group">
+                    <label class="form-label"
+                      >Poli
+                      <span class="form-required" v-show="show_kamar_options"
+                        >*</span
+                      ></label
+                    >
+                    <select
+                      name="beast"
+                      id="select-beast"
+                      :disabled="!show_kamar_options"
+                      class="form-control custom-select"
+                      :class="invalidKamar ? 'is-invalid' : ''"
+                      v-model="userSelected.poli"
+                    >
+                      <option
+                        v-for="p in poli"
+                        :value="p.poli_id"
+                        :key="p.poli_id"
+                        >{{ p.poli_nama }}</option
+                      >
+                    </select>
+                    <div class="invalid-feedback" v-show="errors.kamar">
+                      {{ errors.kamar }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-12" v-show="show_kamar_options">
+                  <div class="form-group">
+                    <label class="form-label"
+                      >Nomor Ruangan/Kamar <span class="form-required">*</span></label
+                    >
+                    <input
+                      type="text"
+                      v-model="userSelected.nomor_kamar"
+                      class="form-control"
+                      :class="invalidKamar ? 'is-invalid' : ''"
+                      placeholder="Nomor Ruangan/Kamar"
+                    />
+                    <div class="invalid-feedback" v-show="errors.kamar">
+                      {{ errors.kamar }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- End Kamar -->
               </div>
             </div>
 
@@ -357,6 +413,7 @@ export default {
       invalidPoli: false,
       invalidTensi: false,
       invalidLoket: false,
+      invalidKamar: false,
       addUser: false
     };
   },
@@ -375,6 +432,9 @@ export default {
     },
     show_tensi_options() {
       return this.userSelected.role === "tensi";
+    },
+    show_kamar_options() {
+      return this.userSelected.role === "kamar";
     }
   },
   methods: {
@@ -432,6 +492,7 @@ export default {
       this.invalidPoli = false;
       this.invalidLoket = false;
       this.invalidTensi = false;
+      this.invalidKamar = false;
 
       if (!this.userSelected.name) {
         this.errors["name"] = "Username Harus diisi";
@@ -471,6 +532,13 @@ export default {
         }
       }
 
+      if (this.userSelected.role === "kamar") {
+        if (!this.userSelected.nomor_kamar) {
+          this.errors["kamar"] = "Kamar Harus Diisi";
+          this.invalidKamar = true;
+        }
+      }
+
       if (!Object.keys(this.errors).length) {
         this.save();
       }
@@ -489,7 +557,8 @@ export default {
         poli: self.userSelected.poli,
         tensi: self.userSelected.tensi,
         loket: self.userSelected.loket,
-        prioritas: self.userSelected.prioritas
+        prioritas: self.userSelected.prioritas,
+        nomor_kamar: self.userSelected.nomor_kamar
       };
       axios.post("users/save", { user: user }).then(response => {
         if (response.data.res == "SUCCESS") {

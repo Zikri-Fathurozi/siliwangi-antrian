@@ -1688,6 +1688,381 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/LoketKamarComponent.vue?vue&type=script&lang=js&":
+/*!******************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/LoketKamarComponent.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var v_mask__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! v-mask */ "./node_modules/v-mask/dist/v-mask.esm.js");
+
+
+
+Vue.use(v_mask__WEBPACK_IMPORTED_MODULE_2__["default"]);
+moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ["id_poli", 'nomor_kamar_urutan'],
+  data: function data() {
+    return {
+      ws: null,
+      poli: {
+        poli_nama: ""
+      },
+      antri_waiting: [],
+      antri_current: {},
+      antri_completed: [],
+      completed: [],
+      disabled_call: false,
+      total_pendaftar: 0,
+      summary_rujuk: [],
+      total_rujuk: 0,
+      cari: ""
+    };
+  },
+  watch: {
+    cari: function cari(newVal, oldVal) {
+      // watch it
+      if (newVal != "" && this.completed.length > 0) {
+        this.antri_completed = this.completed.filter(function (i) {
+          return i.tiket_poli_nomor.toLowerCase().includes(newVal.toLowerCase());
+        });
+      } else {
+        this.antri_completed = this.completed;
+      }
+    },
+    disabled_call: function disabled_call(val) {
+      this.set_disabled_button(val);
+    }
+  },
+  computed: {
+    show_success_attend: function show_success_attend() {
+      return this.antri_current.tiket_poli_acceptor != null;
+    },
+    show_attend: function show_attend() {
+      if (this.show_panggil_antrian) {
+        return false;
+      }
+      return this.antri_current.tiket_poli_nomor != "-";
+    },
+    show_is_rujuk: function show_is_rujuk() {
+      return this.antri_current.tiket_pasien_dirujuk != 0;
+    },
+    show_panggil_antrian: function show_panggil_antrian() {
+      return this.antri_current.panggil_ulang === 0;
+    },
+    disabled_selesai: function disabled_selesai() {
+      return this.antri_current.panggil_ulang === 0 || this.antri_current.tiket_poli_nomor == "-" || this.antri_waiting.length > 0 || this.disabled_call;
+    },
+    disabled_panggil_selanjutnya: function disabled_panggil_selanjutnya() {
+      return this.antri_current.panggil_ulang === 0 || this.antri_waiting.length === 0 || this.disabled_call;
+    },
+    disabled_panggil_ulang: function disabled_panggil_ulang() {
+      return this.antri_current.tiket_poli_nomor == "-" || this.disabled_call || this.show_success_attend;
+    }
+  },
+  methods: {
+    save_config: function save_config() {
+      var self = this;
+      axios.post("poli/save", {
+        poli: this.poli
+      }).then(function (response) {
+        if (response.data.res == "SUCCESS") {
+          self.init_data();
+          sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
+            type: "success",
+            title: "Pengaturan berhasil disimpan",
+            showConfirmButton: false,
+            timer: 1000
+          });
+          self.ws.send(JSON.stringify({
+            target: "tiket_dispenser"
+          }));
+        }
+      });
+    },
+    parse_antri: function parse_antri(data) {
+      this.total_pendaftar = 0;
+      this.antri_waiting = [];
+      this.antri_current = {
+        tiket_poli_nomor: "-"
+      };
+      this.antri_completed = [];
+      var current = true;
+      var completed = [];
+      for (var x in data) {
+        this.total_pendaftar++;
+        if (data[x].tiket_poli_status == 0) {
+          if (current) {
+            this.antri_current = data[x];
+            current = false;
+          } else {
+            this.antri_waiting.push(data[x]);
+          }
+        } else if (data[x].tiket_poli_status > 0) {
+          completed.push(data[x]);
+        }
+      }
+      for (var _x = completed.length - 1; _x >= 0; _x--) {
+        this.antri_completed.push(completed[_x]);
+      }
+      this.completed = this.antri_completed;
+    },
+    init_data: function init_data() {
+      var _this = this;
+      var vm = this;
+      axios.post("poli/antrian").then(function (response) {
+        return vm.parse_antri(response.data);
+      });
+      axios.post("poli/get/" + this.id_poli).then(function (response) {
+        return _this.poli = response.data;
+      });
+      axios.post("poli/summary-rujuk").then(function (response) {
+        _this.summary_rujuk = response.data.list;
+        _this.total_rujuk = response.data.total;
+      });
+    },
+    call_number: function call_number(number) {
+      this.ws.send(JSON.stringify({
+        target: "display",
+        sub_target: "poli",
+        poli: this.id_poli,
+        nomor: number
+      }));
+    },
+    panggil_ulang: function panggil_ulang() {
+      var _this2 = this;
+      var nomor = this.antri_current.tiket_poli_nomor;
+      this.antri_current.panggil_ulang++;
+      axios.post("poli/call", {
+        nomor: nomor,
+        call: this.antri_current.panggil_ulang
+      }).then(function (response) {
+        _this2.call_number(_this2.antri_current.tiket_poli_nomor);
+        if (_this2.antri_current.panggil_ulang == 1) {
+          _this2.ws.send(JSON.stringify({
+            target: "display",
+            sub_target: "poli",
+            action: "update_summary"
+          }));
+        }
+      });
+      this.set_disabled_button(true);
+    },
+    panggil_selanjutnya: function panggil_selanjutnya() {
+      var _this3 = this;
+      var next = this.antri_waiting[0].tiket_poli_nomor;
+      if (this.antri_current.tiket_poli_acceptor == null) {
+        var nomor = this.antri_current.tiket_poli_nomor;
+        var title = "Konfirmasi";
+        var question = "<b style='color:#FF0000!important'><button type='button' class='btn btn-secondary dropdown-toggle'><i class='fa fa-user-times'></i></button> Tanda pendaftar hadir belum dicentang.</b><br/>Apakah antrian " + nomor + " tidak hadir?<br/><br/>";
+        sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
+          title: title,
+          html: question,
+          width: "60%",
+          showCancelButton: true,
+          cancelButtonText: "Tutup",
+          confirmButtonText: "Ya ".concat(nomor, "  tidak hadir, Panggil nomor selanjutnya (").concat(next, ")")
+        }).then(function (result) {
+          if (result.value) {
+            _this3.set_disabled_button(true);
+            axios.post("poli/next", {
+              poli: _this3.antri_current,
+              next: next
+            }).then(function (response) {
+              return _this3.call_number(next), _this3.init_data(), _this3.ws.send(JSON.stringify({
+                target: "loket",
+                sub_target: "poli",
+                poli: _this3.id_poli
+              })), _this3.ws.send(JSON.stringify({
+                target: "tiket_dispenser"
+              })), _this3.ws.send(JSON.stringify({
+                target: "display",
+                sub_target: "poli",
+                action: "update_summary"
+              }));
+            });
+          }
+        });
+      } else {
+        this.set_disabled_button(true);
+        axios.post("poli/next", {
+          poli: this.antri_current,
+          next: next
+        }).then(function (response) {
+          return _this3.call_number(next), _this3.init_data(), _this3.ws.send(JSON.stringify({
+            target: "loket",
+            sub_target: "poli",
+            poli: _this3.id_poli
+          })), _this3.ws.send(JSON.stringify({
+            target: "tiket_dispenser"
+          })), _this3.ws.send(JSON.stringify({
+            target: "display",
+            sub_target: "poli",
+            action: "update_summary"
+          }));
+        });
+      }
+    },
+    selesai: function selesai() {
+      var _this4 = this;
+      if (this.antri_current.tiket_poli_acceptor == null) {
+        var nomor = this.antri_current.tiket_poli_nomor;
+        var title = "Konfirmasi";
+        var question = "<b style='color:#FF0000!important'><button type='button' class='btn btn-secondary dropdown-toggle'><i class='fa fa-user-times'></i></button> Tanda pendaftar hadir belum dicentang.</b><br/>Apakah antrian " + nomor + " tidak hadir?<br/><br/>";
+        sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
+          title: title,
+          html: question,
+          width: "50%",
+          showCancelButton: true,
+          confirmButtonText: "Ya"
+        }).then(function (result) {
+          if (result.value) {
+            axios.post("poli/end", {
+              poli: _this4.antri_current
+            }).then(function (response) {
+              return _this4.init_data(), _this4.ws.send(JSON.stringify({
+                target: "loket",
+                sub_target: "poli",
+                poli: _this4.id_poli
+              })), _this4.ws.send(JSON.stringify({
+                target: "tiket_dispenser"
+              }));
+            });
+          }
+        });
+      } else {
+        axios.post("poli/end", {
+          poli: this.antri_current
+        }).then(function (response) {
+          return _this4.init_data(), _this4.ws.send(JSON.stringify({
+            target: "loket",
+            sub_target: "poli",
+            poli: _this4.id_poli
+          })), _this4.ws.send(JSON.stringify({
+            target: "tiket_dispenser"
+          }));
+        });
+      }
+    },
+    set_attend: function set_attend(poli, value) {
+      var _this5 = this;
+      var self = this;
+      axios.post("poli/attend", {
+        poli: poli,
+        value: value
+      }).then(function (response) {
+        if (!value) {
+          self.set_rujuk(poli, false);
+        }
+        self.init_data();
+        self.ws.send(JSON.stringify({
+          target: "tiket_dispenser"
+        }));
+        self.ws.send(JSON.stringify({
+          target: "loket",
+          sub_target: "poli",
+          poli: _this5.id_poli
+        }));
+      });
+    },
+    set_rujuk: function set_rujuk(poli, value) {
+      var _this6 = this;
+      if (!value && poli.tiket_pasien_dirujuk == "0") return false;
+      if (value && poli.tiket_pasien_dirujuk == "1") return false;
+      var self = this;
+      axios.post("poli/rujuk", {
+        poli: poli,
+        value: value
+      }).then(function (response) {
+        if (value) {
+          if (poli.tiket_poli_status != 1) {
+            self.set_attend(poli, true);
+          }
+        }
+        self.init_data();
+        self.ws.send(JSON.stringify({
+          target: "tiket_dispenser"
+        }));
+        self.ws.send(JSON.stringify({
+          target: "loket",
+          sub_target: "poli",
+          poli: _this6.id_poli
+        }));
+      });
+    },
+    ws_error_message: function ws_error_message() {
+      $(".app_panel").LoadingOverlay("show", {
+        image: "",
+        text: "koneksi socket server terputus, hubungi wawicom.",
+        textColor: "#9C9999"
+      });
+    },
+    ws_connect: function ws_connect() {
+      var self = this;
+      this.ws = new WebSocket(document.head.querySelector('meta[name="web-socket"]').content);
+      this.ws.onopen = function () {
+        $(".app_panel").LoadingOverlay("hide", true);
+        self.init_data();
+      };
+      this.ws.onclose = function (e) {
+        self.ws_error_message();
+        setTimeout(function () {
+          self.ws_connect();
+        }, 3000);
+      };
+      this.ws.onerror = function (err) {
+        self.ws_error_message();
+        self.ws.close();
+      };
+      this.ws.onmessage = function (e) {
+        var data = JSON.parse(e.data);
+        console.log(data);
+        if (data.target == "loket") {
+          if (data.action == "refresh_browser") {
+            location.reload(true);
+          }
+          if (data.sub_target == "poli") {
+            if (data.gedung == self.poli.poli_gedung) {
+              self.disabled_call = data.disabled_call ? true : false;
+            }
+            if (data.action == "add_new") {
+              if (self.btnSelesaiClick) {
+                sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.closeModal();
+              }
+            }
+            if (data.poli == self.id_poli) {
+              self.init_data();
+            }
+          }
+        }
+      };
+    },
+    set_disabled_button: function set_disabled_button(bool) {
+      if (bool) {
+        $("#panggil_ulang").attr("disabled", "disabled");
+        $("#panggil_selanjutnya").attr("disabled", "disabled");
+        $("#selesai").attr("disabled", "disabled");
+      } else {
+        $("#panggil_ulang").removeAttr("disabled");
+        if (this.antri_waiting.length > 0) $("#panggil_selanjutnya").removeAttr("disabled");else $("#selesai").removeAttr("disabled");
+      }
+    }
+  },
+  created: function created() {
+    var self = this;
+    this.ws_connect();
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/LoketPendaftaranComponent.vue?vue&type=script&lang=js&":
 /*!************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/LoketPendaftaranComponent.vue?vue&type=script&lang=js& ***!
@@ -4823,6 +5198,7 @@ __webpack_require__.r(__webpack_exports__);
       invalidPoli: false,
       invalidTensi: false,
       invalidLoket: false,
+      invalidKamar: false,
       addUser: false
     };
   },
@@ -4839,6 +5215,9 @@ __webpack_require__.r(__webpack_exports__);
     },
     show_tensi_options: function show_tensi_options() {
       return this.userSelected.role === "tensi";
+    },
+    show_kamar_options: function show_kamar_options() {
+      return this.userSelected.role === "kamar";
     }
   },
   methods: {
@@ -4889,6 +5268,7 @@ __webpack_require__.r(__webpack_exports__);
       this.invalidPoli = false;
       this.invalidLoket = false;
       this.invalidTensi = false;
+      this.invalidKamar = false;
       if (!this.userSelected.name) {
         this.errors["name"] = "Username Harus diisi";
         this.invalidName = true;
@@ -4922,6 +5302,12 @@ __webpack_require__.r(__webpack_exports__);
           this.invalidLoket = true;
         }
       }
+      if (this.userSelected.role === "kamar") {
+        if (!this.userSelected.nomor_kamar) {
+          this.errors["kamar"] = "Kamar Harus Diisi";
+          this.invalidKamar = true;
+        }
+      }
       if (!Object.keys(this.errors).length) {
         this.save();
       }
@@ -4937,7 +5323,8 @@ __webpack_require__.r(__webpack_exports__);
         poli: self.userSelected.poli,
         tensi: self.userSelected.tensi,
         loket: self.userSelected.loket,
-        prioritas: self.userSelected.prioritas
+        prioritas: self.userSelected.prioritas,
+        nomor_kamar: self.userSelected.nomor_kamar
       };
       axios.post("users/save", {
         user: user
@@ -5909,7 +6296,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     fetchBuffers: function fetchBuffers() {
       var _this2 = this;
-      console.log('Masuk', this.base_url);
       var audios = this.audios_name.map(function (name) {
         return "".concat(_this2.base_url, "/audios/").concat(_this2.voice, "/audio_").concat(name, ".mp3");
       });
@@ -6079,6 +6465,651 @@ __webpack_require__.r(__webpack_exports__);
     this.nextVideo();
   }
 });
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/LoketKamarComponent.vue?vue&type=template&id=37bfd351&":
+/*!****************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/LoketKamarComponent.vue?vue&type=template&id=37bfd351& ***!
+  \****************************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function render() {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "container app_panel"
+  }, [_c("div", {
+    staticClass: "row row-cards"
+  }, [_c("div", {
+    staticClass: "col-sm-6 col-lg-3"
+  }, [_c("div", {
+    staticClass: "card p-3"
+  }, [_c("div", {
+    staticClass: "d-flex align-items-center"
+  }, [_vm._m(0), _vm._v(" "), _c("div", [_c("h4", {
+    staticClass: "m-0"
+  }, [_vm._v(_vm._s(_vm.poli.poli_nama) + " - Kamar " + _vm._s(_vm.nomor_kamar_urutan))])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-sm-6 col-lg-3"
+  }, [_c("div", {
+    staticClass: "card p-3"
+  }, [_c("div", {
+    staticClass: "d-flex align-items-center"
+  }, [_vm._m(1), _vm._v(" "), _c("div", [_c("h4", {
+    staticClass: "m-0"
+  }, [_vm._v("\n              " + _vm._s(_vm.total_pendaftar) + " "), _c("small", [_vm._v("Total Pendaftar")])])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-sm-6 col-lg-3"
+  }, [_c("div", {
+    staticClass: "card p-3"
+  }, [_c("div", {
+    staticClass: "d-flex align-items-center"
+  }, [_vm._m(2), _vm._v(" "), _c("div", [_c("h4", {
+    staticClass: "m-0"
+  }, [_vm._v("\n              " + _vm._s(_vm.antri_waiting.length) + " "), _c("small", [_vm._v("Mengantri")])])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-sm-6 col-lg-3"
+  }, [_c("div", {
+    staticClass: "card p-3"
+  }, [_c("div", {
+    staticClass: "d-flex align-items-center"
+  }, [_vm._m(3), _vm._v(" "), _c("div", [_c("h4", {
+    staticClass: "m-0"
+  }, [_vm._v("\n              " + _vm._s(_vm.antri_completed.length) + " "), _c("small", [_vm._v("Selesai")])])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-md-6 col-lg-3"
+  }, [_c("div", {
+    staticClass: "card"
+  }, [_c("div", {
+    staticClass: "card-status bg-blue"
+  }), _vm._v(" "), _c("div", {
+    staticClass: "card-header"
+  }, [_vm._m(4), _vm._v(" "), _c("div", {
+    staticClass: "card-options"
+  }, [_c("span", {
+    staticClass: "badge badge-danger"
+  }, [_vm._v(_vm._s(_vm.antri_waiting.length))])])]), _vm._v(" "), _c("div", {
+    staticClass: "card-body o-auto",
+    staticStyle: {
+      height: "17.4rem"
+    }
+  }, [_c("ul", {
+    staticClass: "list-unstyled list-separated"
+  }, [_vm._l(_vm.antri_waiting, function (antri, key) {
+    return _c("li", {
+      key: key,
+      staticClass: "list-separated-item"
+    }, [_c("div", {
+      staticClass: "row align-items-center"
+    }, [_c("div", {
+      staticClass: "col"
+    }, [_c("div", [_c("a", {
+      staticClass: "text-inherit"
+    }, [_vm._v("Nomor Antri "), _c("b", [_vm._v(_vm._s(antri.tiket_poli_nomor))])])]), _vm._v(" "), _c("small", {
+      staticClass: "d-block item-except text-sm text-muted h-1x"
+    }, [_c("b", [_vm._v("Jam Registrasi :")]), _vm._v(" " + _vm._s(antri.tiket_accepted))])])])]);
+  }), _vm._v(" "), _c("li", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.antri_waiting.length === 0,
+      expression: "antri_waiting.length === 0"
+    }],
+    staticClass: "list-separated-item"
+  }, [_vm._m(5)])], 2)]), _vm._v(" "), _c("div", {
+    staticClass: "card-footer"
+  })])]), _vm._v(" "), _c("div", {
+    staticClass: "col-md-6 col-lg-4"
+  }, [_c("div", {
+    staticClass: "card"
+  }, [_c("div", {
+    staticClass: "card-status bg-yellow"
+  }), _vm._v(" "), _vm._m(6), _vm._v(" "), _c("div", {
+    staticClass: "card-body text-center"
+  }, [_vm.show_success_attend ? _c("h3", {
+    staticStyle: {
+      "font-size": "6.2em",
+      color: "#CCC",
+      margin: "0"
+    }
+  }, [_vm._v("\n            " + _vm._s(_vm.antri_current.tiket_nomor) + "\n          ")]) : _c("h3", {
+    staticStyle: {
+      "font-size": "6.2em",
+      color: "#FFA500",
+      margin: "0"
+    }
+  }, [_vm._v("\n            " + _vm._s(_vm.antri_current.tiket_nomor ? _vm.antri_current.tiket_nomor : "-") + "\n          ")])]), _vm._v(" "), _c("div", {
+    staticClass: "card-footer"
+  }, [_c("div", {
+    staticClass: "row align-items-center"
+  }, [_c("div", {
+    staticClass: "col-6"
+  }, [_c("small", {
+    staticClass: "d-block item-except text-sm m-0"
+  }, [_c("b", [_vm._v("Registrasi :")]), _vm._v("\n                " + _vm._s(_vm.antri_current.tiket_accepted) + "\n              ")])]), _vm._v(" "), _c("div", {
+    staticClass: "col-6"
+  }, [_c("small", {
+    staticClass: "d-block item-except text-sm m-0"
+  }, [_c("b", [_vm._v("Nomor Antri :")]), _vm._v("\n                " + _vm._s(_vm.antri_current.tiket_nomor) + "\n              ")])]), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.show_attend,
+      expression: "show_attend"
+    }],
+    staticClass: "col-6 mt-2"
+  }, [_c("div", {
+    staticClass: "dropdown"
+  }, [_c("button", {
+    staticClass: "btn btn-secondary dropdown-toggle",
+    attrs: {
+      type: "button",
+      "data-toggle": "dropdown",
+      "aria-expanded": "false"
+    }
+  }, [_vm.show_success_attend ? _c("div", {
+    staticClass: "tag tag-success"
+  }, [_vm._v("\n                    hadir\n                    "), _vm._m(7)]) : _c("span", [_vm._v("\n                    Kehadiran\n                  ")]), _vm._v(" "), _vm.show_success_attend ? _c("i", {
+    staticClass: "fa fa-user"
+  }) : _c("i", {
+    staticClass: "fa fa-user-times"
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "dropdown-menu",
+    staticStyle: {
+      position: "absolute",
+      transform: "translate3d(0px, 38px, 0px)",
+      top: "0px",
+      left: "0px",
+      "will-change": "transform"
+    },
+    attrs: {
+      "x-placement": "bottom-start"
+    }
+  }, [_c("div", {
+    staticClass: "dropdown-item disabled"
+  }, [_vm._v("\n                    Apakah pendaftar hadir?\n                  ")]), _vm._v(" "), _c("div", {
+    staticClass: "dropdown-divider"
+  }), _vm._v(" "), _vm.show_success_attend ? _c("a", {
+    staticClass: "dropdown-item",
+    attrs: {
+      href: "javascript:void(0)"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.set_attend(_vm.antri_current, false);
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-close text-danger"
+  }), _vm._v(" Tidak Hadir")]) : _c("a", {
+    staticClass: "dropdown-item",
+    attrs: {
+      href: "javascript:void(0)"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.set_attend(_vm.antri_current, true);
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-check text-success"
+  }), _vm._v(" Ya, Pendaftar\n                    Hadir")])])])]), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.show_attend,
+      expression: "show_attend"
+    }],
+    staticClass: "col-6 mt-2"
+  }, [_c("div", {
+    staticClass: "dropdown"
+  }, [_c("button", {
+    staticClass: "btn btn-secondary dropdown-toggle",
+    attrs: {
+      type: "button",
+      "data-toggle": "dropdown",
+      "aria-expanded": "false"
+    }
+  }, [_vm.show_is_rujuk ? _c("div", {
+    staticClass: "tag tag-info"
+  }, [_vm._v("\n                    Dirujuk\n                    "), _vm._m(8)]) : _c("span", [_vm._v("\n                    Rujukan\n                  ")]), _vm._v(" "), _vm.show_is_rujuk ? _c("i", {
+    staticClass: "fa fa-hospital-o"
+  }) : _c("i", {
+    staticClass: "fa fa-ambulance"
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "dropdown-menu",
+    staticStyle: {
+      position: "absolute",
+      transform: "translate3d(0px, 38px, 0px)",
+      top: "0px",
+      left: "0px",
+      "will-change": "transform"
+    },
+    attrs: {
+      "x-placement": "bottom-start"
+    }
+  }, [_c("div", {
+    staticClass: "dropdown-item disabled"
+  }, [_vm._v("\n                    Apakah pasien dirujuk?\n                  ")]), _vm._v(" "), _c("div", {
+    staticClass: "dropdown-divider"
+  }), _vm._v(" "), _vm.show_is_rujuk ? _c("a", {
+    staticClass: "dropdown-item",
+    attrs: {
+      href: "javascript:void(0)"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.set_rujuk(_vm.antri_current, false);
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-close text-danger"
+  }), _vm._v(" Tidak Dirujuk")]) : _c("a", {
+    staticClass: "dropdown-item",
+    attrs: {
+      href: "javascript:void(0)"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.set_rujuk(_vm.antri_current, true);
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-check text-success"
+  }), _vm._v(" Ya, Pasien\n                    Dirujuk")])])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "card-footer p-3"
+  }, [_c("button", {
+    staticClass: "btn bg-warning",
+    attrs: {
+      type: "button",
+      disabled: _vm.disabled_panggil_ulang,
+      id: "panggil_ulang"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.panggil_ulang();
+      }
+    }
+  }, [_vm.show_panggil_antrian ? _c("span", [_c("i", {
+    staticClass: "fa fa-volume-up"
+  }), _vm._v(" Panggil Antrian")]) : _c("span", [_c("i", {
+    staticClass: "fa fa-refresh"
+  }), _vm._v(" Panggil Ulang ")]), _vm._v(" "), _vm.antri_current.panggil_ulang > 0 ? _c("span", [_vm._v("(" + _vm._s(_vm.antri_current.panggil_ulang) + ")")]) : _vm._e()]), _vm._v(" "), _vm.antri_waiting.length > 0 ? _c("span", [_c("button", {
+    staticClass: "btn btn-success",
+    attrs: {
+      type: "button",
+      disabled: _vm.disabled_panggil_selanjutnya,
+      id: "panggil_selanjutnya"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.panggil_selanjutnya();
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-play mr-2"
+  }), _vm._v("Panggil Selanjutnya\n            ")])]) : _c("span", [_c("button", {
+    staticClass: "btn btn-success",
+    attrs: {
+      type: "button",
+      disabled: _vm.disabled_selesai,
+      id: "selesai"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.selesai();
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-check-circle mr-2"
+  }), _vm._v("Selesai\n            ")])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-md-6 col-lg-3"
+  }, [_c("div", {
+    staticClass: "card"
+  }, [_c("div", {
+    staticClass: "card-status bg-green"
+  }), _vm._v(" "), _c("div", {
+    staticClass: "card-header"
+  }, [_vm._m(9), _vm._v(" "), _c("div", {
+    staticClass: "card-options"
+  }, [_c("span", {
+    staticClass: "badge badge-success"
+  }, [_vm._v(_vm._s(_vm.antri_completed.length))])])]), _vm._v(" "), _c("div", {
+    staticClass: "card-body o-auto",
+    staticStyle: {
+      height: "15rem"
+    }
+  }, [_c("ul", {
+    staticClass: "list-unstyled list-separated"
+  }, [_vm._l(_vm.antri_completed, function (antri, key) {
+    return _c("li", {
+      key: key,
+      staticClass: "list-separated-item"
+    }, [_c("div", {
+      staticClass: "row align-items-center"
+    }, [_c("div", {
+      staticClass: "col"
+    }, [_c("div", [_c("a", {
+      staticClass: "text-inherit",
+      attrs: {
+        title: antri.tiket_poli_status == 1 ? "Pendaftar hadir" : "Pendaftar tidak hadir"
+      }
+    }, [_c("i", {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: antri.tiket_poli_status == 1,
+        expression: "antri.tiket_poli_status == 1"
+      }],
+      staticClass: "fa fa-check-circle text-success"
+    }), _vm._v(" "), _c("i", {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: antri.tiket_poli_status == 2,
+        expression: "antri.tiket_poli_status == 2"
+      }],
+      staticClass: "fa fa-minus-circle text-danger"
+    }), _vm._v("\n                      Nomor Antri "), _c("b", [_vm._v(_vm._s(antri.tiket_poli_nomor))])])]), _vm._v(" "), _c("div", {
+      staticClass: "dropdown pull-right",
+      staticStyle: {
+        "margin-top": "-20px"
+      }
+    }, [_vm._m(10, true), _vm._v(" "), _c("div", {
+      staticClass: "dropdown-menu",
+      staticStyle: {
+        position: "absolute",
+        transform: "translate3d(0px, 38px, 0px)",
+        top: "0px",
+        left: "0px",
+        "will-change": "transform"
+      },
+      attrs: {
+        "x-placement": "bottom-start"
+      }
+    }, [antri.tiket_poli_status == 1 ? _c("a", {
+      staticClass: "dropdown-item",
+      attrs: {
+        href: "javascript:void(0)"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.set_attend(antri, false);
+        }
+      }
+    }, [_c("i", {
+      staticClass: "fa fa-close text-danger"
+    }), _vm._v(" Klik, jika\n                        tidak Hadir")]) : _c("a", {
+      staticClass: "dropdown-item",
+      attrs: {
+        href: "javascript:void(0)"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.set_attend(antri, true);
+        }
+      }
+    }, [_c("i", {
+      staticClass: "fa fa-check text-success"
+    }), _vm._v(" Klik, jika\n                        pasien Hadir")]), _vm._v(" "), _c("div", {
+      staticClass: "dropdown-divider"
+    }), _vm._v(" "), antri.tiket_pasien_dirujuk == 1 ? _c("a", {
+      staticClass: "dropdown-item",
+      attrs: {
+        href: "javascript:void(0)"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.set_rujuk(antri, false);
+        }
+      }
+    }, [_c("i", {
+      staticClass: "fa fa-close text-danger"
+    }), _vm._v(" Klik, jika\n                        tidak Dirujuk")]) : _c("a", {
+      staticClass: "dropdown-item",
+      attrs: {
+        href: "javascript:void(0)"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.set_rujuk(antri, true);
+        }
+      }
+    }, [_c("i", {
+      staticClass: "fa fa-check text-success"
+    }), _vm._v(" Klik, jika\n                        pasien Dirujuk")])])]), _vm._v(" "), antri.tiket_poli_status == 1 ? _c("small", {
+      staticClass: "d-block item-except text-sm text-muted h-1x"
+    }, [_c("b", [_vm._v("Jam Dilayani :")]), _vm._v("\n                    " + _vm._s(antri.tiket_poli_accepted))]) : _c("small", {
+      staticClass: "d-block item-except text-sm text-muted h-1x"
+    }, [_c("b", [_vm._v("Pasien tidak Hadir")])]), _vm._v(" "), antri.tiket_poli_status == 1 ? _c("small", {
+      staticClass: "d-block item-except text-sm text-muted h-1x"
+    }, [_c("b", [_vm._v("Dirujuk ")]), _vm._v(":\n                    "), antri.tiket_pasien_dirujuk === "1" ? _c("span", {
+      staticClass: "text-danger"
+    }, [_vm._v("Ya")]) : _c("span", [_vm._v("Tidak")])]) : _vm._e()])])]);
+  }), _vm._v(" "), _c("li", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.antri_completed.length === 0,
+      expression: "antri_completed.length === 0"
+    }],
+    staticClass: "list-separated-item"
+  }, [_c("div", {
+    staticClass: "row align-items-center"
+  }, [_c("div", {
+    staticClass: "col"
+  }, [_c("div", [_c("a", {
+    staticClass: "text-inherit"
+  }, [_c("i", {
+    staticClass: "fa fa-info-circle text-info"
+  }), _vm._v(" "), _vm.cari == "" ? _c("i", [_vm._v("Belum ada antrian selesai.")]) : _c("i", [_vm._v("Nomor Antrian tidak ditemukan.")])])])])])])], 2)]), _vm._v(" "), _c("div", {
+    staticClass: "card-footer"
+  }, [_c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.cari,
+      expression: "cari"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      type: "text",
+      placeholder: "Cari nomor Antrian"
+    },
+    domProps: {
+      value: _vm.cari
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.cari = $event.target.value;
+      }
+    }
+  })])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-md-6 col-lg-2"
+  }, [_c("div", {
+    staticClass: "card"
+  }, [_c("div", {
+    staticClass: "card-status bg-red"
+  }), _vm._v(" "), _vm._m(11), _vm._v(" "), _c("div", {
+    staticClass: "card-body o-auto p-3",
+    staticStyle: {
+      height: "17.4rem"
+    }
+  }, [_c("ul", {
+    staticClass: "list-unstyled list-separated"
+  }, [_vm._l(_vm.summary_rujuk, function (summary, index) {
+    return _c("li", {
+      key: index,
+      staticClass: "p-0"
+    }, [_c("div", {
+      staticClass: "row align-items-center"
+    }, [_c("div", {
+      staticClass: "col"
+    }, [_vm._v("\n                  " + _vm._s(summary.poli_nama) + "\n                ")]), _vm._v(" "), _c("div", {
+      staticClass: "col-auto"
+    }, [_c("b", [_vm._v(_vm._s(summary.total))])])])]);
+  }), _vm._v(" "), _c("li", {
+    staticClass: "p-0"
+  }, [_c("div", {
+    staticClass: "row align-items-center text-primary"
+  }, [_c("div", {
+    staticClass: "col font-weight-bold"
+  }, [_vm._v("\n                  TOTAL\n                ")]), _vm._v(" "), _c("div", {
+    staticClass: "col-auto"
+  }, [_c("b", [_vm._v(_vm._s(_vm.total_rujuk))])])])])], 2), _vm._v(" "), _c("div", {
+    staticClass: "col p-0 mb-0 mt-5"
+  }, [_c("div", {
+    staticClass: "form-group p-0"
+  }, [_c("label", {
+    staticClass: "mb-0"
+  }, [_vm._v("Tutup Pendaftaran :")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "mask",
+      rawName: "v-mask",
+      value: "##:##",
+      expression: "'##:##'"
+    }, {
+      name: "model",
+      rawName: "v-model",
+      value: _vm.poli.poli_closehour,
+      expression: "poli.poli_closehour"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      type: "text",
+      name: "field-name",
+      maxlength: "5",
+      placeholder: "00:00"
+    },
+    domProps: {
+      value: _vm.poli.poli_closehour
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.poli, "poli_closehour", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _c("button", {
+    staticClass: "btn mt-2 btn-sm btn-primary",
+    on: {
+      click: function click($event) {
+        return _vm.save_config();
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-save"
+  }), _vm._v(" Sesuaikan\n              ")])])])]), _vm._v(" "), _c("div", {
+    staticClass: "card-footer"
+  })])])])]);
+};
+var staticRenderFns = [function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("span", {
+    staticClass: "stamp stamp-md bg-blue mr-3"
+  }, [_c("i", {
+    staticClass: "fa fa-home"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("span", {
+    staticClass: "stamp stamp-md bg-yellow mr-3"
+  }, [_c("i", {
+    staticClass: "fa fa-users"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("span", {
+    staticClass: "stamp stamp-md bg-red mr-3"
+  }, [_c("i", {
+    staticClass: "fa fa-stack-overflow"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("span", {
+    staticClass: "stamp stamp-md bg-green mr-3"
+  }, [_c("i", {
+    staticClass: "fa fa-check"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("h3", {
+    staticClass: "card-title"
+  }, [_c("b", [_vm._v("Sedang Mengantri")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "row align-items-center"
+  }, [_c("div", {
+    staticClass: "col"
+  }, [_c("div", [_c("a", {
+    staticClass: "text-inherit"
+  }, [_c("i", {
+    staticClass: "fa fa-check-circle text-success"
+  }), _vm._v(" "), _c("i", [_vm._v("Tidak ada antrian.")])])])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "card-header"
+  }, [_c("h3", {
+    staticClass: "card-title"
+  }, [_c("b", [_vm._v("Antrian Sekarang")])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("span", {
+    staticClass: "tag-addon"
+  }, [_c("i", {
+    staticClass: "fa fa-check"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("span", {
+    staticClass: "tag-addon"
+  }, [_c("i", {
+    staticClass: "fa fa-check"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("h3", {
+    staticClass: "card-title"
+  }, [_c("b", [_vm._v("Selesai")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("button", {
+    staticClass: "btn btn-secondary",
+    attrs: {
+      type: "button",
+      "data-toggle": "dropdown",
+      "aria-expanded": "false"
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-ellipsis-v"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "card-header p-3"
+  }, [_c("h3", {
+    staticClass: "card-title"
+  }, [_c("b", [_vm._v("Info Rujukan")])])]);
+}];
+render._withStripped = true;
+
 
 /***/ }),
 
@@ -12157,6 +13188,32 @@ var render = function render() {
     attrs: {
       type: "radio",
       name: "role",
+      value: "kamar"
+    },
+    domProps: {
+      checked: _vm._q(_vm.userSelected.role, "kamar")
+    },
+    on: {
+      click: _vm.handleSelectRole,
+      change: function change($event) {
+        return _vm.$set(_vm.userSelected, "role", "kamar");
+      }
+    }
+  }), _vm._v(" "), _c("span", {
+    staticClass: "selectgroup-button"
+  }, [_vm._v("Ruangan/Kamar")])]), _vm._v(" "), _c("label", {
+    staticClass: "selectgroup-item"
+  }, [_c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.userSelected.role,
+      expression: "userSelected.role"
+    }],
+    staticClass: "selectgroup-input",
+    attrs: {
+      type: "radio",
+      name: "role",
       value: "tensi"
     },
     domProps: {
@@ -12483,7 +13540,107 @@ var render = function render() {
     staticClass: "custom-switch-indicator"
   }), _vm._v(" "), _c("span", {
     staticClass: "custom-switch-description"
-  }, [_vm._v("Loket Pasien Prioritas?")])])])])])]), _vm._v(" "), _c("div", {
+  }, [_vm._v("Loket Pasien Prioritas?")])])])]), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.show_kamar_options,
+      expression: "show_kamar_options"
+    }],
+    staticClass: "col-md-12"
+  }, [_c("div", {
+    staticClass: "form-group"
+  }, [_c("label", {
+    staticClass: "form-label"
+  }, [_vm._v("Poli\n                    "), _c("span", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.show_kamar_options,
+      expression: "show_kamar_options"
+    }],
+    staticClass: "form-required"
+  }, [_vm._v("*")])]), _vm._v(" "), _c("select", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.userSelected.poli,
+      expression: "userSelected.poli"
+    }],
+    staticClass: "form-control custom-select",
+    "class": _vm.invalidKamar ? "is-invalid" : "",
+    attrs: {
+      name: "beast",
+      id: "select-beast",
+      disabled: !_vm.show_kamar_options
+    },
+    on: {
+      change: function change($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+          return o.selected;
+        }).map(function (o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val;
+        });
+        _vm.$set(_vm.userSelected, "poli", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
+      }
+    }
+  }, _vm._l(_vm.poli, function (p) {
+    return _c("option", {
+      key: p.poli_id,
+      domProps: {
+        value: p.poli_id
+      }
+    }, [_vm._v(_vm._s(p.poli_nama))]);
+  }), 0), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.errors.kamar,
+      expression: "errors.kamar"
+    }],
+    staticClass: "invalid-feedback"
+  }, [_vm._v("\n                    " + _vm._s(_vm.errors.kamar) + "\n                  ")])])]), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.show_kamar_options,
+      expression: "show_kamar_options"
+    }],
+    staticClass: "col-md-12"
+  }, [_c("div", {
+    staticClass: "form-group"
+  }, [_vm._m(3), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.userSelected.nomor_kamar,
+      expression: "userSelected.nomor_kamar"
+    }],
+    staticClass: "form-control",
+    "class": _vm.invalidKamar ? "is-invalid" : "",
+    attrs: {
+      type: "text",
+      placeholder: "Nomor Ruangan/Kamar"
+    },
+    domProps: {
+      value: _vm.userSelected.nomor_kamar
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.userSelected, "nomor_kamar", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.errors.kamar,
+      expression: "errors.kamar"
+    }],
+    staticClass: "invalid-feedback"
+  }, [_vm._v("\n                    " + _vm._s(_vm.errors.kamar) + "\n                  ")])])])])]), _vm._v(" "), _c("div", {
     staticClass: "card-footer text-right"
   }, [_c("div", {
     staticClass: "d-flex"
@@ -12520,6 +13677,14 @@ var staticRenderFns = [function () {
   return _c("label", {
     staticClass: "form-label"
   }, [_vm._v("Email "), _c("span", {
+    staticClass: "form-required"
+  }, [_vm._v("*")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("label", {
+    staticClass: "form-label"
+  }, [_vm._v("Nomor Ruangan/Kamar "), _c("span", {
     staticClass: "form-required"
   }, [_vm._v("*")])]);
 }];
@@ -105084,6 +106249,7 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 
 Vue.component("loket-pendaftaran-component", __webpack_require__(/*! ./components/LoketPendaftaranComponent.vue */ "./resources/js/components/LoketPendaftaranComponent.vue")["default"]);
 Vue.component("loket-poli-component", __webpack_require__(/*! ./components/LoketPoliComponent.vue */ "./resources/js/components/LoketPoliComponent.vue")["default"]);
+Vue.component("loket-kamar-component", __webpack_require__(/*! ./components/LoketKamarComponent.vue */ "./resources/js/components/LoketKamarComponent.vue")["default"]);
 Vue.component("loket-tensi-component", __webpack_require__(/*! ./components/LoketTensiComponent.vue */ "./resources/js/components/LoketTensiComponent.vue")["default"]);
 Vue.component("ticket-dispenser-component", __webpack_require__(/*! ./components/TicketDispenserComponent.vue */ "./resources/js/components/TicketDispenserComponent.vue")["default"]);
 Vue.component("ticket-dispenser-new-component", __webpack_require__(/*! ./components/TicketDispenserNewComponent.vue */ "./resources/js/components/TicketDispenserNewComponent.vue")["default"]);
@@ -105195,6 +106361,75 @@ if (base_url) {
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     encrypted: true
 // });
+
+/***/ }),
+
+/***/ "./resources/js/components/LoketKamarComponent.vue":
+/*!*********************************************************!*\
+  !*** ./resources/js/components/LoketKamarComponent.vue ***!
+  \*********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _LoketKamarComponent_vue_vue_type_template_id_37bfd351___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./LoketKamarComponent.vue?vue&type=template&id=37bfd351& */ "./resources/js/components/LoketKamarComponent.vue?vue&type=template&id=37bfd351&");
+/* harmony import */ var _LoketKamarComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./LoketKamarComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/LoketKamarComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _LoketKamarComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _LoketKamarComponent_vue_vue_type_template_id_37bfd351___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _LoketKamarComponent_vue_vue_type_template_id_37bfd351___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/LoketKamarComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/LoketKamarComponent.vue?vue&type=script&lang=js&":
+/*!**********************************************************************************!*\
+  !*** ./resources/js/components/LoketKamarComponent.vue?vue&type=script&lang=js& ***!
+  \**********************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_LoketKamarComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./LoketKamarComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/LoketKamarComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_LoketKamarComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/LoketKamarComponent.vue?vue&type=template&id=37bfd351&":
+/*!****************************************************************************************!*\
+  !*** ./resources/js/components/LoketKamarComponent.vue?vue&type=template&id=37bfd351& ***!
+  \****************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_LoketKamarComponent_vue_vue_type_template_id_37bfd351___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!../../../node_modules/vue-loader/lib??vue-loader-options!./LoketKamarComponent.vue?vue&type=template&id=37bfd351& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/LoketKamarComponent.vue?vue&type=template&id=37bfd351&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_LoketKamarComponent_vue_vue_type_template_id_37bfd351___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_LoketKamarComponent_vue_vue_type_template_id_37bfd351___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
 
 /***/ }),
 
