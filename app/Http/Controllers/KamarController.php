@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Tiket;
 use App\Poli;
+use App\User;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
@@ -37,7 +38,7 @@ class KamarController extends Controller
     foreach ($data as $d) {
       $list[$d->poli_id] = $d;
     }
-    
+
     $query = "SELECT
 				p.poli_id,
 				CASE WHEN p.poli_kuota = 0 THEN 0
@@ -129,7 +130,6 @@ class KamarController extends Controller
           "sisa" => $sisa,
         ];
       } else {
-          dd($d);
         $sisa = Tiket::select()
           ->join("ant_poli", "ant_tiket.{$field_poli_id}", "ant_poli.poli_id")
           ->where("ant_tiket.{$field_poli_call}", 0)
@@ -157,80 +157,53 @@ class KamarController extends Controller
   {
     $req = $request->all();
 
-    $poli = Poli::select([
-      "poli_id",
-      "poli_color",
-      "poli_nama",
-      "poli_audio",
-      "poli_gedung",
-      "poli_is_tensi",
-    ])
-      ->where("poli_gedung", $req["poli_gedung"])
-      ->where("poli_prioritas", "0")
-      ->orderBy("poli_nama", "ASC")
-      ->get();
+    $kamar = User::select(['name', 'nomor_kamar'])
+        ->where('poli', $req['poli'])
+        ->where('role', 'kamar')
+        ->orderBy('nomor_kamar', 'ASC')->get();
 
     $list = [];
-    foreach ($poli as $d) {
-      $field_poli_call = "tiket_poli_call";
-      $field_poli_id = "tiket_poli_id";
-      $field_nomor = "tiket_poli_nomor";
-      $field_poli_call_datetime = "tiket_poli_call_datetime";
+    foreach ($kamar as $value) {
+        $poli = Poli::select([
+            "poli_id",
+            "poli_color",
+            "poli_nama",
+            "poli_audio",
+            "poli_gedung",
+            "poli_is_tensi",
+        ])->where('poli_id', $req['poli'])
+            // ->where("poli_prioritas", "0")
+            ->orderBy("poli_nama", "ASC")
+            ->get();
 
-      if ($d->poli_is_tensi == "1") {
-        $field_poli_call = "tiket_tensi_call";
-        $field_poli_id = "tiket_tensi_id";
-        $field_nomor = "tiket_tensi_nomor";
-        $field_poli_call_datetime = "tiket_tensi_call_datetime";
-      }
+        foreach ($poli as $d) {
+            $field_poli_call = "tiket_poli_call";
+            $field_poli_id = "tiket_poli_id";
+            $field_nomor = "tiket_poli_nomor";
+            $field_poli_call_datetime = "tiket_poli_call_datetime";
+            
+            if ($d->poli_is_tensi == "1") {
+                $field_poli_call = "tiket_tensi_call";
+                $field_poli_id = "tiket_tensi_id";
+                $field_nomor = "tiket_tensi_nomor";
+                $field_poli_call_datetime = "tiket_tensi_call_datetime";
+            }
+      
+            $tiket = Tiket::select(["tiket_poli_nomor", "tiket_tensi_nomor"])
+                ->where($field_poli_call, ">", 0)
+                ->where($field_poli_id, $d->poli_id)
+                ->where('kamar_poli', $value->nomor_kamar)
+                ->where(DB::raw('DATE_FORMAT(tiket_date,"%Y-%m-%d")'), date("Y-m-d"))
+                ->orderBy($field_poli_call_datetime, "DESC")
+                ->first();
+      
+            $nomor = $tiket ? $tiket->tiket_poli_nomor : "-";
+            $d->tiket_poli_nomor = $nomor;
+            $list[$value->nomor_kamar] = $d;
+            $list[$value->nomor_kamar]['nomor_kamar'] = $value->nomor_kamar;
+            $list[$value->nomor_kamar]['name'] = $value->name;
+        }
 
-      if (
-        $d->poli_id == $this->poli_umum_id &&
-        config("antrian.umum_prioritas")
-      ) {
-        // poli umum
-        $tiket = Tiket::select(["tiket_poli_nomor", "tiket_tensi_nomor"])
-          ->where($field_poli_call, ">", 0)
-          ->where($field_poli_id, $d->poli_id)
-          ->where("tiket_prioritas", "0")
-          ->where(DB::raw('DATE_FORMAT(tiket_date,"%Y-%m-%d")'), date("Y-m-d"))
-          ->orderBy($field_poli_call_datetime, "DESC")
-          ->first();
-
-        $nomor = $tiket ? $tiket->$field_nomor : "-";
-        $d->tiket_poli_nomor = $nomor;
-        $list[$d->poli_id] = $d;
-
-        // poli umum prioritas
-        $tiket = Tiket::select(["tiket_poli_nomor", "tiket_tensi_nomor"])
-          ->where($field_poli_call, ">", 0)
-          ->where($field_poli_id, $d->poli_id)
-          ->where("tiket_prioritas", "1")
-          ->where(DB::raw('DATE_FORMAT(tiket_date,"%Y-%m-%d")'), date("Y-m-d"))
-          ->orderBy($field_poli_call_datetime, "DESC")
-          ->first();
-
-        $nomor = $tiket ? $tiket->$field_nomor : "-";
-        $list[12] = (object) [
-          "poli_id" => 12,
-          "poli_color" => "",
-          "poli_nama" => "UMUM PRIORITAS",
-          "poli_audio" => $d->poli_audio,
-          "poli_gedung" => $d->poli_gedung,
-          "tiket_poli_nomor" => $nomor,
-        ];
-      } else {
-        $tiket = Tiket::select(["tiket_poli_nomor", "tiket_tensi_nomor"])
-          ->where($field_poli_call, ">", 0)
-          ->where($field_poli_id, $d->poli_id)
-          ->where(DB::raw('DATE_FORMAT(tiket_date,"%Y-%m-%d")'), date("Y-m-d"))
-          ->orderBy($field_poli_call_datetime, "DESC")
-          ->first();
-
-        $nomor = $tiket ? $tiket->$field_nomor : "-";
-        $d->tiket_poli_nomor = $nomor;
-        $list[$d->poli_id] = $d;
-      }
     }
 
     return json_encode($list);
@@ -270,67 +243,39 @@ class KamarController extends Controller
 
   public function antrian()
   {
-    if (Auth::user()->prioritas == "1") {
-      $data = Tiket::select([
-        "tiket_nomor",
-        "tiket_status",
-        "tiket_poli_nomor",
-        "tiket_poli_status",
-        "tiket_poli_acceptor",
-        "tiket_pasien_dirujuk",
-        "ant_poli.poli_id",
-        "ant_poli.poli_nama",
-        DB::raw('DATE_FORMAT(tiket_accepted,"%H:%i:%s") as tiket_accepted'),
-        DB::raw(
-          'DATE_FORMAT(tiket_poli_accepted,"%H:%i:%s") as tiket_poli_accepted'
-        ),
-        DB::raw("tiket_poli_call as panggil_ulang"),
-      ])
-        ->join("ant_poli", "ant_tiket.tiket_poli_id", "ant_poli.poli_id")
-        ->where(["tiket_poli_id" => Auth::user()->poli])
-        ->where("tiket_prioritas", "1")
-        ->where("tiket_status", "1")
-        ->where("tiket_tensi_status", "1")
-        ->where(
-          DB::raw('DATE_FORMAT(tiket_accepted,"%Y-%m-%d")'),
-          date("Y-m-d")
-        )
-        ->orderBy("ant_tiket.tiket_poli_call", "DESC")
-        ->orderBy("ant_tiket.tiket_prioritas", "DESC")
-        ->orderBy("ant_tiket.tiket_poli_nomor", "ASC")
-        ->get();
-    } else {
-      $data = Tiket::select([
-        "tiket_nomor",
-        "tiket_status",
-        "tiket_poli_nomor",
-        "tiket_poli_status",
-        "tiket_poli_acceptor",
-        "tiket_pasien_dirujuk",
-        "ant_poli.poli_id",
-        "ant_poli.poli_nama",
-        DB::raw('DATE_FORMAT(tiket_accepted,"%H:%i:%s") as tiket_accepted'),
-        DB::raw(
-          'DATE_FORMAT(tiket_poli_accepted,"%H:%i:%s") as tiket_poli_accepted'
-        ),
-        DB::raw("tiket_poli_call as panggil_ulang"),
-      ])
-        ->join("ant_poli", "ant_tiket.tiket_poli_id", "ant_poli.poli_id")
-        ->where(["tiket_poli_id" => Auth::user()->poli])
-        ->where("tiket_prioritas", "0")
-        ->where("tiket_status", "1");
-      
-        if (Auth::user()->poli == $this->poli_umum_id) {
-          $data = $data->where("tiket_tensi_status", "1");
-        }
-        $data = $data->where(
-          DB::raw('DATE_FORMAT(tiket_accepted,"%Y-%m-%d")'),
-          date("Y-m-d")
-        )
-        ->orderBy("ant_tiket.tiket_poli_call", "DESC")
-        ->orderBy("ant_tiket.tiket_poli_nomor", "ASC")
-        ->get();
+    $data = Tiket::select([
+    "tiket_nomor",
+    "tiket_status",
+    "tiket_poli_nomor",
+    "tiket_poli_status",
+    "tiket_poli_acceptor",
+    "tiket_pasien_dirujuk",
+    "ant_poli.poli_id",
+    "ant_poli.poli_nama",
+    DB::raw('DATE_FORMAT(tiket_accepted,"%H:%i:%s") as tiket_accepted'),
+    DB::raw(
+        'DATE_FORMAT(tiket_poli_accepted,"%H:%i:%s") as tiket_poli_accepted'
+    ),
+    DB::raw("tiket_poli_call as panggil_ulang"),
+    ])
+    ->join("ant_poli", "ant_tiket.tiket_poli_id", "ant_poli.poli_id")
+    ->where(["tiket_poli_id" => Auth::user()->poli])
+    ->where("tiket_status", "1");
+    
+    if (Auth::user()->poli == $this->poli_umum_id) {
+        $data = $data->where("tiket_tensi_status", "1");
     }
+    $data = $data->where(
+        DB::raw('DATE_FORMAT(tiket_accepted,"%Y-%m-%d")'),
+        date("Y-m-d")
+    )
+	->where(function ($query) {
+        $query->where('kamar_poli', Auth::user()->nomor_kamar)
+            ->orWhereNull('kamar_poli');
+    })
+    ->orderBy("ant_tiket.tiket_poli_call", "DESC")
+    ->orderBy("ant_tiket.tiket_poli_nomor", "ASC")
+    ->get();
 
     return json_encode($data);
   }
@@ -370,12 +315,14 @@ class KamarController extends Controller
   {
     $nomor = $request->get("nomor");
     $call = $request->get("call");
+    $kamar = $request->get("kamar");
 
     Tiket::where("tiket_poli_nomor", $nomor)
       ->where(DB::raw('DATE_FORMAT(tiket_date,"%Y-%m-%d")'), date("Y-m-d"))
       ->update([
         "tiket_poli_call" => $call,
         "tiket_poli_call_datetime" => date("Y-m-d H:i:s"),
+        'kamar_poli' => $kamar
       ]);
   }
 

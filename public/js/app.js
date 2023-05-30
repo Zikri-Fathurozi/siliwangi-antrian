@@ -1770,7 +1770,7 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
   methods: {
     save_config: function save_config() {
       var self = this;
-      axios.post("poli/save", {
+      axios.post("kamar/save", {
         poli: this.poli
       }).then(function (response) {
         if (response.data.res == "SUCCESS") {
@@ -1817,13 +1817,13 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
     init_data: function init_data() {
       var _this = this;
       var vm = this;
-      axios.post("poli/antrian").then(function (response) {
+      axios.post("kamar/antrian").then(function (response) {
         return vm.parse_antri(response.data);
       });
-      axios.post("poli/get/" + this.id_poli).then(function (response) {
+      axios.post("kamar/get/" + this.id_poli).then(function (response) {
         return _this.poli = response.data;
       });
-      axios.post("poli/summary-rujuk").then(function (response) {
+      axios.post("kamar/summary-rujuk").then(function (response) {
         _this.summary_rujuk = response.data.list;
         _this.total_rujuk = response.data.total;
       });
@@ -1831,7 +1831,8 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
     call_number: function call_number(number) {
       this.ws.send(JSON.stringify({
         target: "display",
-        sub_target: "poli",
+        sub_target: "kamar",
+        nomor_kamar: this.nomor_kamar_urutan,
         poli: this.id_poli,
         nomor: number
       }));
@@ -1840,15 +1841,17 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
       var _this2 = this;
       var nomor = this.antri_current.tiket_poli_nomor;
       this.antri_current.panggil_ulang++;
-      axios.post("poli/call", {
+      axios.post("kamar/call", {
         nomor: nomor,
-        call: this.antri_current.panggil_ulang
+        call: this.antri_current.panggil_ulang,
+        kamar: this.nomor_kamar_urutan
       }).then(function (response) {
         _this2.call_number(_this2.antri_current.tiket_poli_nomor);
         if (_this2.antri_current.panggil_ulang == 1) {
           _this2.ws.send(JSON.stringify({
             target: "display",
-            sub_target: "poli",
+            sub_target: "kamar",
+            nomor_kamar: _this2.nomor_kamar_urutan,
             action: "update_summary"
           }));
         }
@@ -1872,19 +1875,21 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
         }).then(function (result) {
           if (result.value) {
             _this3.set_disabled_button(true);
-            axios.post("poli/next", {
+            axios.post("kamar/next", {
               poli: _this3.antri_current,
               next: next
             }).then(function (response) {
               return _this3.call_number(next), _this3.init_data(), _this3.ws.send(JSON.stringify({
                 target: "loket",
-                sub_target: "poli",
+                sub_target: "kamar",
+                nomor_kamar: _this3.nomor_kamar_urutan,
                 poli: _this3.id_poli
               })), _this3.ws.send(JSON.stringify({
                 target: "tiket_dispenser"
               })), _this3.ws.send(JSON.stringify({
                 target: "display",
-                sub_target: "poli",
+                sub_target: "kamar",
+                nomor_kamar: _this3.nomor_kamar_urutan,
                 action: "update_summary"
               }));
             });
@@ -1892,19 +1897,21 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
         });
       } else {
         this.set_disabled_button(true);
-        axios.post("poli/next", {
+        axios.post("kamar/next", {
           poli: this.antri_current,
           next: next
         }).then(function (response) {
           return _this3.call_number(next), _this3.init_data(), _this3.ws.send(JSON.stringify({
             target: "loket",
-            sub_target: "poli",
+            sub_target: "kamar",
+            nomor_kamar: _this3.nomor_kamar_urutan,
             poli: _this3.id_poli
           })), _this3.ws.send(JSON.stringify({
             target: "tiket_dispenser"
           })), _this3.ws.send(JSON.stringify({
             target: "display",
-            sub_target: "poli",
+            sub_target: "kamar",
+            nomor_kamar: _this3.nomor_kamar_urutan,
             action: "update_summary"
           }));
         });
@@ -1924,12 +1931,13 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
           confirmButtonText: "Ya"
         }).then(function (result) {
           if (result.value) {
-            axios.post("poli/end", {
+            axios.post("kamar/end", {
               poli: _this4.antri_current
             }).then(function (response) {
               return _this4.init_data(), _this4.ws.send(JSON.stringify({
                 target: "loket",
-                sub_target: "poli",
+                sub_target: "kamar",
+                nomor_kamar: _this4.nomor_kamar_urutan,
                 poli: _this4.id_poli
               })), _this4.ws.send(JSON.stringify({
                 target: "tiket_dispenser"
@@ -1938,12 +1946,13 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
           }
         });
       } else {
-        axios.post("poli/end", {
+        axios.post("kamar/end", {
           poli: this.antri_current
         }).then(function (response) {
           return _this4.init_data(), _this4.ws.send(JSON.stringify({
             target: "loket",
-            sub_target: "poli",
+            sub_target: "kamar",
+            nomor_kamar: _this4.nomor_kamar_urutan,
             poli: _this4.id_poli
           })), _this4.ws.send(JSON.stringify({
             target: "tiket_dispenser"
@@ -1954,7 +1963,7 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
     set_attend: function set_attend(poli, value) {
       var _this5 = this;
       var self = this;
-      axios.post("poli/attend", {
+      axios.post("kamar/attend", {
         poli: poli,
         value: value
       }).then(function (response) {
@@ -1967,7 +1976,8 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
         }));
         self.ws.send(JSON.stringify({
           target: "loket",
-          sub_target: "poli",
+          sub_target: "kamar",
+          nomor_kamar: _this5.nomor_kamar_urutan,
           poli: _this5.id_poli
         }));
       });
@@ -1977,7 +1987,7 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
       if (!value && poli.tiket_pasien_dirujuk == "0") return false;
       if (value && poli.tiket_pasien_dirujuk == "1") return false;
       var self = this;
-      axios.post("poli/rujuk", {
+      axios.post("kamar/rujuk", {
         poli: poli,
         value: value
       }).then(function (response) {
@@ -1992,7 +2002,8 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
         }));
         self.ws.send(JSON.stringify({
           target: "loket",
-          sub_target: "poli",
+          sub_target: "kamar",
+          nomor_kamar: _this6.nomor_kamar_urutan,
           poli: _this6.id_poli
         }));
       });
@@ -2023,12 +2034,11 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
       };
       this.ws.onmessage = function (e) {
         var data = JSON.parse(e.data);
-        console.log(data);
         if (data.target == "loket") {
           if (data.action == "refresh_browser") {
             location.reload(true);
           }
-          if (data.sub_target == "poli") {
+          if (data.sub_target == "kamar") {
             if (data.gedung == self.poli.poli_gedung) {
               self.disabled_call = data.disabled_call ? true : false;
             }
@@ -2037,9 +2047,10 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
                 sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.closeModal();
               }
             }
-            if (data.poli == self.id_poli) {
-              self.init_data();
-            }
+
+            // if (data.poli == self.id_poli) {
+            self.init_data();
+            // }
           }
         }
       };
@@ -5606,6 +5617,318 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/displays/DisplayKamarComponent.vue?vue&type=script&lang=js&":
+/*!*****************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/displays/DisplayKamarComponent.vue?vue&type=script&lang=js& ***!
+  \*****************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var typed_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! typed.js */ "./node_modules/typed.js/lib/typed.js");
+/* harmony import */ var typed_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(typed_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _elements_PoliComponent_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../elements/PoliComponent.vue */ "./resources/js/components/elements/PoliComponent.vue");
+/* harmony import */ var _elements_BannerComponent_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../elements/BannerComponent.vue */ "./resources/js/components/elements/BannerComponent.vue");
+/* harmony import */ var _elements_BannerIndicatorComponent_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../elements/BannerIndicatorComponent.vue */ "./resources/js/components/elements/BannerIndicatorComponent.vue");
+/* harmony import */ var _elements_VideoComponent_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../elements/VideoComponent.vue */ "./resources/js/components/elements/VideoComponent.vue");
+/* harmony import */ var _elements_AudioComponent_vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../elements/AudioComponent.vue */ "./resources/js/components/elements/AudioComponent.vue");
+/* harmony import */ var _elements_TimeComponent_vue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../elements/TimeComponent.vue */ "./resources/js/components/elements/TimeComponent.vue");
+/* harmony import */ var _commons_HeaderComponent_vue__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../commons/HeaderComponent.vue */ "./resources/js/components/commons/HeaderComponent.vue");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+
+
+
+
+
+var waitFor = function waitFor(ms) {
+  return new Promise(function (r) {
+    return setTimeout(r, ms);
+  });
+};
+function asyncForEach(_x, _x2) {
+  return _asyncForEach.apply(this, arguments);
+}
+function _asyncForEach() {
+  _asyncForEach = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(array, callback) {
+    var index;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) switch (_context3.prev = _context3.next) {
+        case 0:
+          index = 0;
+        case 1:
+          if (!(index < array.length)) {
+            _context3.next = 7;
+            break;
+          }
+          _context3.next = 4;
+          return callback(array[index], index, array);
+        case 4:
+          index++;
+          _context3.next = 1;
+          break;
+        case 7:
+        case "end":
+          return _context3.stop();
+      }
+    }, _callee3);
+  }));
+  return _asyncForEach.apply(this, arguments);
+}
+/* harmony default export */ __webpack_exports__["default"] = ({
+  components: {
+    PoliComponent: _elements_PoliComponent_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
+    BannerComponent: _elements_BannerComponent_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
+    BannerIndicatorComponent: _elements_BannerIndicatorComponent_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
+    VideoComponent: _elements_VideoComponent_vue__WEBPACK_IMPORTED_MODULE_5__["default"],
+    AudioComponent: _elements_AudioComponent_vue__WEBPACK_IMPORTED_MODULE_6__["default"],
+    TimeComponent: _elements_TimeComponent_vue__WEBPACK_IMPORTED_MODULE_7__["default"],
+    HeaderComponent: _commons_HeaderComponent_vue__WEBPACK_IMPORTED_MODULE_8__["default"]
+  },
+  props: ["app_name", "app_address", "gedung", "poli_id"],
+  data: function data() {
+    return {
+      base_url: document.head.querySelector('meta[name="base-url"]').content,
+      ws: null,
+      daftar_poli: [],
+      daftar_image: [],
+      daftar_video: [],
+      config: [],
+      info_text: [],
+      audios: "",
+      nomor_daftar: "-",
+      summary: [],
+      queues: [],
+      waitingAudio: 0,
+      isCalling: false,
+      queues_processing: []
+    };
+  },
+  watch: {
+    queues: function () {
+      var _queues = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(val) {
+        var _this = this;
+        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+          while (1) switch (_context2.prev = _context2.next) {
+            case 0:
+              if (!(val.length === 0)) {
+                _context2.next = 2;
+                break;
+              }
+              return _context2.abrupt("return");
+            case 2:
+              val.forEach(function (e) {
+                if (!_this.queues_processing.find(function (p) {
+                  return p.nomor === e.nomor;
+                })) {
+                  _this.queues_processing.push(e);
+                }
+              });
+              if (!this.isCalling) {
+                _context2.next = 6;
+                break;
+              }
+              _context2.next = 6;
+              return waitFor(this.waitingAudio * 1000);
+            case 6:
+              asyncForEach(this.queues_processing, /*#__PURE__*/function () {
+                var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(element) {
+                  var index;
+                  return _regeneratorRuntime().wrap(function _callee$(_context) {
+                    while (1) switch (_context.prev = _context.next) {
+                      case 0:
+                        console.log('asyncForEach ');
+                        console.log(element);
+                        _this.play_audio(element);
+                        _context.next = 5;
+                        return waitFor(_this.waitingAudio * 1000);
+                      case 5:
+                        index = _this.queues_processing.indexOf(element);
+                        _this.queues_processing.splice(index, 1);
+                      case 7:
+                      case "end":
+                        return _context.stop();
+                    }
+                  }, _callee);
+                }));
+                return function (_x4) {
+                  return _ref.apply(this, arguments);
+                };
+              }());
+              this.queues = [];
+            case 8:
+            case "end":
+              return _context2.stop();
+          }
+        }, _callee2, this);
+      }));
+      function queues(_x3) {
+        return _queues.apply(this, arguments);
+      }
+      return queues;
+    }(),
+    waitingAudio: function waitingAudio(val) {
+      var _this2 = this;
+      if (this.waitingAudio === 0) this.isCalling = false;
+      this.isCalling = true;
+      setTimeout(function () {
+        _this2.isCalling = false;
+        _this2.waitingAudio = 0;
+      }, val * 1000);
+    },
+    isCalling: function isCalling(val) {
+      if (val) {
+        this.disable_tombol_panggil(true);
+      } else {
+        this.disable_tombol_panggil(false);
+      }
+    }
+  },
+  methods: {
+    get_summary: function get_summary() {
+      var _this3 = this;
+      axios.post("api/poli/summary", {
+        poli_gedung: this.gedung
+      }).then(function (response) {
+        return _this3.summary = response.data;
+      });
+    },
+    get_display: function get_display() {
+      var _this4 = this;
+      axios.post("api/kamar/list-display", {
+        poli: this.poli_id,
+        poli_gedung: this.gedung
+      }).then(function (response) {
+        return _this4.daftar_poli = response.data;
+      });
+    },
+    init_data: function init_data() {
+      var _this5 = this;
+      this.get_display();
+      this.get_summary();
+      axios.post("api/banner/list-image/1").then(function (response) {
+        return _this5.daftar_image = response.data;
+      });
+      axios.post("api/banner/list-video/1").then(function (response) {
+        return _this5.daftar_video = response.data;
+      });
+      axios.post("api/info/list-display").then(function (response) {
+        return _this5.info_text = response.data, new typed_js__WEBPACK_IMPORTED_MODULE_1___default.a("#info_text", {
+          strings: response.data,
+          typeSpeed: 30,
+          backDelay: 7000,
+          showCursor: false,
+          cursorChar: "",
+          loop: true
+        });
+      });
+      axios.post("api/banner/config").then(function (response) {
+        return _this5.config = response.data;
+      });
+    },
+    disable_tombol_panggil: function disable_tombol_panggil(bool) {
+      this.ws.send(JSON.stringify({
+        target: "loket",
+        sub_target: "kamar",
+        gedung: this.gedung,
+        disabled_call: bool
+      }));
+    },
+    ws_error_message: function ws_error_message() {
+      $(".app_panel").LoadingOverlay("show", {
+        image: "",
+        text: "koneksi socket server terputus, hubungi wawicom.",
+        textColor: "#9C9999"
+      });
+    },
+    ws_connect: function ws_connect() {
+      var self = this;
+      this.ws = new WebSocket(document.head.querySelector('meta[name="web-socket"]').content);
+      this.ws.onopen = function () {
+        $(".app_panel").LoadingOverlay("hide", true);
+        self.init_data();
+      };
+      this.ws.onclose = function (e) {
+        self.ws_error_message();
+        setTimeout(function () {
+          self.ws_connect();
+        }, 3000);
+      };
+      this.ws.onerror = function (err) {
+        self.ws_error_message();
+        self.ws.close();
+      };
+      this.ws.onmessage = function (e) {
+        var data = JSON.parse(e.data);
+        if (data.target == "display") {
+          if (data.sub_target == "update_setting") {
+            self.init_data();
+          } else if (data.sub_target == "kamar") {
+            if (data.action == "update_summary") {
+              self.get_summary();
+            }
+            if (data.nomor) {
+              if (self.daftar_poli[data.poli]) {
+                // save request audio to queues
+                self.queues.push({
+                  nomor: data.nomor,
+                  ruangan: data.nomor_kamar,
+                  poli: self.daftar_poli[data.poli]
+                });
+                self.get_display();
+                self.get_summary();
+              }
+            }
+          }
+          if (data.action == "refresh_browser") {
+            location.reload(true);
+          }
+        }
+      };
+    },
+    play_audio: function play_audio(data) {
+      var nomor = data.nomor,
+        poli = data.poli,
+        ruangan = data.ruangan;
+      //play audio
+      this.waitingAudio = this.$refs.audio.play_audio({
+        tujuan: "kamar",
+        poli: poli,
+        kamar: ruangan,
+        nomor: nomor
+      });
+      //end audio
+
+      sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
+        html: "\n          <div class=\"card mb-0\" style=\"background-color:#0f4110\">\n            <div class=\"card-header text-center\">\n              <div class=\"card-body p-0\" style=\"font-size:4em;font-weight:bold;color:#FBC02D\">\n                ".concat(poli.poli_nama, " - RUANGAN ").concat(ruangan, "\n              </div>\n            </div>\n            <div class=\"card-body text-center pt-1\" style=\"background-color:#1A7818;\">\n              <div class=\"display-1 font-weight-bold mb-2 mt-0\" style=\"color:#FFF176;font-size:18em\">\n                ").concat(nomor, "\n              </div>\n              <div class=\"progress progress-sm\">\n                <div class=\"progress-bar bg-yellow\" style=\"width: 100%\"></div>\n              </div>\n            </div>\n          </div>"),
+        width: "80%",
+        padding: "2em",
+        showConfirmButton: false,
+        timer: 10000,
+        animation: false,
+        customClass: {
+          content: "modal-display-antrian"
+        }
+      });
+    }
+  },
+  created: function created() {
+    var self = this;
+    this.ws_connect();
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/displays/DisplayPoliComponent.vue?vue&type=script&lang=js&":
 /*!****************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/displays/DisplayPoliComponent.vue?vue&type=script&lang=js& ***!
@@ -6228,7 +6551,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   props: ["loket", "app_multiloket"],
   data: function data() {
     return {
-      audios_name: ["bell", "nomor_urut", "loket", "menuju", "pendaftaran", "poli_umum", "poli_gigi", "poli_anak", "poli_konseling", "poli_kia", "poli_lansia", "poli_rujukan", "poli_tb", "poli_vaksin", "ruang_tensi", "P", "U", "A", "L", "G", "K", "T", "S", "R", "V", "0", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas", "duabelas", "tigabelas", "empatbelas", "limabelas", "enambelas", "tujuhbelas", "delapanbelas", "sembilanbelas", "duapuluh", "tigapuluh", "empatpuluh", "limapuluh", "enampuluh", "tujuhpuluh", "delapanpuluh", "sembilanpuluh", "seratus", "duaratus", "tigaratus", "empatratus", "limaratus", "enamratus", "tujuhratus", "delapanratus", "ratus"],
+      audios_name: ["bell", "nomor_urut", "loket", "menuju", "ruangan", "pendaftaran", "poli_umum", "poli_gigi", "poli_anak", "poli_konseling", "poli_kia", "poli_lansia", "poli_rujukan", "poli_tb", "poli_vaksin", "ruang_tensi", "P", "U", "A", "L", "G", "K", "T", "S", "R", "V", "0", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas", "duabelas", "tigabelas", "empatbelas", "limabelas", "enambelas", "tujuhbelas", "delapanbelas", "sembilanbelas", "duapuluh", "tigapuluh", "empatpuluh", "limapuluh", "enampuluh", "tujuhpuluh", "delapanpuluh", "sembilanpuluh", "seratus", "duaratus", "tigaratus", "empatratus", "limaratus", "enamratus", "tujuhratus", "delapanratus", "ratus"],
       base_url: document.head.querySelector('meta[name="base-url"]').content,
       audio_poli: "",
       voice: "male",
@@ -6242,7 +6565,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     play_audio: function play_audio(params) {
       var _this = this;
-      console.log(params);
       var nomor = params.nomor.toString();
       var time = 0;
       // pembukaan
@@ -6278,7 +6600,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }
       } else {
         sequence.push("menuju");
-        sequence.push(params.poli.poli_audio);
+        if (params.tujuan == 'kamar') {
+          sequence.push("ruangan");
+          addTerbilangToSequence(sequence, params.kamar);
+        } else {
+          sequence.push(params.poli.poli_audio);
+        }
       }
       sequence.forEach(function (name) {
         var audioIndex = _this.audios_name.findIndex(function (audioName) {
@@ -14243,6 +14570,156 @@ var render = function render() {
   })])])])]);
 };
 var staticRenderFns = [];
+render._withStripped = true;
+
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/displays/DisplayKamarComponent.vue?vue&type=template&id=9124b878&":
+/*!***************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/displays/DisplayKamarComponent.vue?vue&type=template&id=9124b878& ***!
+  \***************************************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function render() {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "page"
+  }, [_c("div", [_c("div", {
+    staticClass: "page-main"
+  }, [_c("header-component", {
+    attrs: {
+      app_name: _vm.app_name,
+      app_address: _vm.app_address
+    }
+  }), _vm._v(" "), _c("div", {
+    staticClass: "my-3 my-md-12"
+  }, [_c("div", {
+    staticClass: "container-fluid app_panel"
+  }, [_c("div", {
+    staticClass: "row row-cards"
+  }, [_c("div", {
+    staticClass: "col-lg-7"
+  }, [_c("div", {
+    staticClass: "card p-0"
+  }, [_c("div", {
+    staticClass: "card-body p-2"
+  }, [_vm.config.type == "video" ? _c("video-component", {
+    attrs: {
+      daftar_video: _vm.daftar_video
+    }
+  }) : _vm._e(), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.config.type == "image",
+      expression: "config.type == 'image'"
+    }],
+    staticClass: "carousel-banner slide",
+    attrs: {
+      id: "carousel-indicators",
+      "data-ride": "carousel"
+    }
+  }, [_c("ol", {
+    staticClass: "carousel-indicators"
+  }, _vm._l(_vm.daftar_image, function (banner, index) {
+    return _c("banner-indicator-component", {
+      key: banner.id,
+      attrs: {
+        banner: banner,
+        index: index
+      }
+    });
+  }), 1), _vm._v(" "), _c("div", {
+    staticClass: "carousel-inner"
+  }, _vm._l(_vm.daftar_image, function (banner, index) {
+    return _c("banner-component", {
+      key: banner.id,
+      attrs: {
+        banner: banner,
+        index: index
+      }
+    });
+  }), 1)])], 1)])]), _vm._v(" "), _c("div", {
+    staticClass: "col-md-5"
+  }, [_c("div", {
+    staticClass: "row"
+  }, [_c("div", {
+    staticClass: "col-sm-12"
+  }, [_c("div", {
+    staticClass: "card mb-0",
+    staticStyle: {
+      "background-color": "#0f4110",
+      height: "100vh"
+    }
+  }, [_vm._m(0), _vm._v(" "), _c("table", {
+    staticClass: "table card-table h1 font-weight-bold",
+    staticStyle: {
+      "background-color": "#1A7818",
+      color: "#FFF176",
+      "font-size": "3.7vh"
+    }
+  }, [_vm._m(1), _vm._v(" "), _vm._l(_vm.daftar_poli, function (p, index) {
+    return _c("tr", {
+      key: index
+    }, [_c("td", [_vm._v("Ruangan " + _vm._s(p.nomor_kamar))]), _vm._v(" "), _c("td", {
+      staticClass: "text-right text-white"
+    }, [_vm._v("\n                          " + _vm._s(p.tiket_poli_nomor) + "\n                        ")])]);
+  })], 2)])])])])])])])], 1), _vm._v(" "), _vm._m(2), _vm._v(" "), _c("footer", {
+    staticClass: "footer cstm_footer_app cstm_footer text-right p-3"
+  }, [_c("h5", [_c("time-component")], 1)]), _vm._v(" "), _c("audio-component", {
+    ref: "audio",
+    attrs: {
+      audios: _vm.audios
+    }
+  })], 1)]);
+};
+var staticRenderFns = [function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "card-header text-center"
+  }, [_c("div", {
+    staticClass: "card-body h1 p-0",
+    staticStyle: {
+      "font-weight": "bold",
+      color: "#FBC02D",
+      "font-size": "4vh"
+    }
+  }, [_vm._v("\n                        ANTRIAN DILAYANI\n                      ")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("tr", [_c("td", {
+    staticStyle: {
+      color: "#FBC02D"
+    }
+  }, [_vm._v("\n                          RUANGAN\n                        ")]), _vm._v(" "), _c("td", {
+    staticClass: "text-right",
+    staticStyle: {
+      color: "#FBC02D"
+    }
+  }, [_vm._v("\n                          NOMOR\n                        ")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "alert cstm_footer",
+    staticStyle: {
+      background: "#FFF"
+    }
+  }, [_c("span", {
+    attrs: {
+      id: "info_text"
+    }
+  })]);
+}];
 render._withStripped = true;
 
 
@@ -106257,6 +106734,7 @@ if (true) {
   Vue.component("display-pendaftaran-component", __webpack_require__(/*! ./components/displays/multiloket/DisplayPendaftaranComponent.vue */ "./resources/js/components/displays/multiloket/DisplayPendaftaranComponent.vue")["default"]);
 } else {}
 Vue.component("display-poli-component", __webpack_require__(/*! ./components/displays/DisplayPoliComponent.vue */ "./resources/js/components/displays/DisplayPoliComponent.vue")["default"]);
+Vue.component("display-kamar-component", __webpack_require__(/*! ./components/displays/DisplayKamarComponent.vue */ "./resources/js/components/displays/DisplayKamarComponent.vue")["default"]);
 
 //admin
 Vue.component("setting-profile-component", __webpack_require__(/*! ./components/admin/SettingProfileComponent.vue */ "./resources/js/components/admin/SettingProfileComponent.vue")["default"]);
@@ -107946,6 +108424,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_HeaderComponent_vue_vue_type_template_id_6fa92bae___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_HeaderComponent_vue_vue_type_template_id_6fa92bae___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/displays/DisplayKamarComponent.vue":
+/*!********************************************************************!*\
+  !*** ./resources/js/components/displays/DisplayKamarComponent.vue ***!
+  \********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _DisplayKamarComponent_vue_vue_type_template_id_9124b878___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DisplayKamarComponent.vue?vue&type=template&id=9124b878& */ "./resources/js/components/displays/DisplayKamarComponent.vue?vue&type=template&id=9124b878&");
+/* harmony import */ var _DisplayKamarComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DisplayKamarComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/displays/DisplayKamarComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _DisplayKamarComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _DisplayKamarComponent_vue_vue_type_template_id_9124b878___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _DisplayKamarComponent_vue_vue_type_template_id_9124b878___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/displays/DisplayKamarComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/displays/DisplayKamarComponent.vue?vue&type=script&lang=js&":
+/*!*********************************************************************************************!*\
+  !*** ./resources/js/components/displays/DisplayKamarComponent.vue?vue&type=script&lang=js& ***!
+  \*********************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DisplayKamarComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./DisplayKamarComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/displays/DisplayKamarComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DisplayKamarComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/displays/DisplayKamarComponent.vue?vue&type=template&id=9124b878&":
+/*!***************************************************************************************************!*\
+  !*** ./resources/js/components/displays/DisplayKamarComponent.vue?vue&type=template&id=9124b878& ***!
+  \***************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_DisplayKamarComponent_vue_vue_type_template_id_9124b878___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!../../../../node_modules/vue-loader/lib??vue-loader-options!./DisplayKamarComponent.vue?vue&type=template&id=9124b878& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/displays/DisplayKamarComponent.vue?vue&type=template&id=9124b878&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_DisplayKamarComponent_vue_vue_type_template_id_9124b878___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_DisplayKamarComponent_vue_vue_type_template_id_9124b878___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

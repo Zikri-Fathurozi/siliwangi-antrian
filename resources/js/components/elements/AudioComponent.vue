@@ -10,6 +10,7 @@ export default {
         "nomor_urut",
         "loket",
         "menuju",
+        "ruangan",
         "pendaftaran",
         "poli_umum",
         "poli_gigi",
@@ -86,7 +87,6 @@ export default {
     },
 
     play_audio(params) {
-      console.log(params);
       let nomor = params.nomor.toString();
       let time = 0;
       // pembukaan
@@ -124,7 +124,12 @@ export default {
         }
       } else {
         sequence.push("menuju");
-        sequence.push(params.poli.poli_audio);
+        if (params.tujuan == 'kamar') {
+          sequence.push("ruangan")
+          addTerbilangToSequence(sequence, params.kamar)
+        } else {
+          sequence.push(params.poli.poli_audio);
+        }
       }
 
       sequence.forEach(name => {

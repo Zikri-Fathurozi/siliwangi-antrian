@@ -576,7 +576,7 @@ export default {
   methods: {
     save_config() {
       let self = this;
-      axios.post("poli/save", { poli: this.poli }).then(response => {
+      axios.post("kamar/save", { poli: this.poli }).then(response => {
         if (response.data.res == "SUCCESS") {
           self.init_data();
 
@@ -627,14 +627,14 @@ export default {
       var vm = this;
 
       axios
-        .post("poli/antrian")
+        .post("kamar/antrian")
         .then(response => vm.parse_antri(response.data));
 
       axios
-        .post("poli/get/" + this.id_poli)
+        .post("kamar/get/" + this.id_poli)
         .then(response => (this.poli = response.data));
 
-      axios.post("poli/summary-rujuk").then(response => {
+      axios.post("kamar/summary-rujuk").then(response => {
         this.summary_rujuk = response.data.list;
         this.total_rujuk = response.data.total;
       });
@@ -644,7 +644,8 @@ export default {
       this.ws.send(
         JSON.stringify({
           target: "display",
-          sub_target: "poli",
+          sub_target: "kamar",
+          nomor_kamar: this.nomor_kamar_urutan,
           poli: this.id_poli,
           nomor: number
         })
@@ -655,9 +656,10 @@ export default {
       let nomor = this.antri_current.tiket_poli_nomor;
       this.antri_current.panggil_ulang++;
       axios
-        .post("poli/call", {
+        .post("kamar/call", {
           nomor: nomor,
-          call: this.antri_current.panggil_ulang
+          call: this.antri_current.panggil_ulang,
+          kamar: this.nomor_kamar_urutan
         })
         .then(response => {
           this.call_number(this.antri_current.tiket_poli_nomor);
@@ -665,7 +667,8 @@ export default {
             this.ws.send(
               JSON.stringify({
                 target: "display",
-                sub_target: "poli",
+                sub_target: "kamar",
+                nomor_kamar: this.nomor_kamar_urutan,
                 action: "update_summary"
               })
             );
@@ -696,7 +699,7 @@ export default {
           if (result.value) {
             this.set_disabled_button(true);
             axios
-              .post("poli/next", { poli: this.antri_current, next: next })
+              .post("kamar/next", { poli: this.antri_current, next: next })
               .then(
                 response => (
                   this.call_number(next),
@@ -704,7 +707,8 @@ export default {
                   this.ws.send(
                     JSON.stringify({
                       target: "loket",
-                      sub_target: "poli",
+                      sub_target: "kamar",
+                      nomor_kamar: this.nomor_kamar_urutan,
                       poli: this.id_poli
                     })
                   ),
@@ -712,7 +716,8 @@ export default {
                   this.ws.send(
                     JSON.stringify({
                       target: "display",
-                      sub_target: "poli",
+                      sub_target: "kamar",
+                      nomor_kamar: this.nomor_kamar_urutan,
                       action: "update_summary"
                     })
                   )
@@ -722,14 +727,15 @@ export default {
         });
       } else {
         this.set_disabled_button(true);
-        axios.post("poli/next", { poli: this.antri_current, next: next }).then(
+        axios.post("kamar/next", { poli: this.antri_current, next: next }).then(
           response => (
             this.call_number(next),
             this.init_data(),
             this.ws.send(
               JSON.stringify({
                 target: "loket",
-                sub_target: "poli",
+                sub_target: "kamar",
+                nomor_kamar: this.nomor_kamar_urutan,
                 poli: this.id_poli
               })
             ),
@@ -737,7 +743,8 @@ export default {
             this.ws.send(
               JSON.stringify({
                 target: "display",
-                sub_target: "poli",
+                sub_target: "kamar",
+                nomor_kamar: this.nomor_kamar_urutan,
                 action: "update_summary"
               })
             )
@@ -763,13 +770,14 @@ export default {
           confirmButtonText: "Ya"
         }).then(result => {
           if (result.value) {
-            axios.post("poli/end", { poli: this.antri_current }).then(
+            axios.post("kamar/end", { poli: this.antri_current }).then(
               response => (
                 this.init_data(),
                 this.ws.send(
                   JSON.stringify({
                     target: "loket",
-                    sub_target: "poli",
+                    sub_target: "kamar",
+                    nomor_kamar: this.nomor_kamar_urutan,
                     poli: this.id_poli
                   })
                 ),
@@ -779,13 +787,14 @@ export default {
           }
         });
       } else {
-        axios.post("poli/end", { poli: this.antri_current }).then(
+        axios.post("kamar/end", { poli: this.antri_current }).then(
           response => (
             this.init_data(),
             this.ws.send(
               JSON.stringify({
                 target: "loket",
-                sub_target: "poli",
+                sub_target: "kamar",
+                nomor_kamar: this.nomor_kamar_urutan,
                 poli: this.id_poli
               })
             ),
@@ -797,7 +806,7 @@ export default {
 
     set_attend(poli, value) {
       let self = this;
-      axios.post("poli/attend", { poli, value }).then(response => {
+      axios.post("kamar/attend", { poli, value }).then(response => {
         if (!value) {
           self.set_rujuk(poli, false);
         }
@@ -807,7 +816,8 @@ export default {
         self.ws.send(
           JSON.stringify({
             target: "loket",
-            sub_target: "poli",
+            sub_target: "kamar",
+            nomor_kamar: this.nomor_kamar_urutan,
             poli: this.id_poli
           })
         );
@@ -819,7 +829,7 @@ export default {
       if (value && poli.tiket_pasien_dirujuk == "1") return false;
 
       let self = this;
-      axios.post("poli/rujuk", { poli, value }).then(response => {
+      axios.post("kamar/rujuk", { poli, value }).then(response => {
         if (value) {
           if (poli.tiket_poli_status != 1) {
             self.set_attend(poli, true);
@@ -831,7 +841,8 @@ export default {
         self.ws.send(
           JSON.stringify({
             target: "loket",
-            sub_target: "poli",
+            sub_target: "kamar",
+            nomor_kamar: this.nomor_kamar_urutan,
             poli: this.id_poli
           })
         );
@@ -872,14 +883,13 @@ export default {
 
       this.ws.onmessage = function(e) {
         var data = JSON.parse(e.data);
-        console.log(data);
 
         if (data.target == "loket") {
           if (data.action == "refresh_browser") {
             location.reload(true);
           }
 
-          if (data.sub_target == "poli") {
+          if (data.sub_target == "kamar") {
             if (data.gedung == self.poli.poli_gedung) {
               self.disabled_call = data.disabled_call ? true : false;
             }
@@ -890,9 +900,9 @@ export default {
               }
             }
 
-            if (data.poli == self.id_poli) {
+            // if (data.poli == self.id_poli) {
               self.init_data();
-            }
+            // }
           }
         }
       };

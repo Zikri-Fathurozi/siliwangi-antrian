@@ -64,6 +64,11 @@ Vue.component(
   require("./components/displays/DisplayPoliComponent.vue").default
 );
 
+Vue.component(
+  "display-kamar-component",
+  require("./components/displays/DisplayKamarComponent.vue").default
+);
+
 //admin
 Vue.component(
   "setting-profile-component",

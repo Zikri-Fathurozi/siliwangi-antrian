@@ -15,7 +15,7 @@ class HomeController extends Controller
   public function __construct()
   {
     $this->middleware("auth", [
-      "except" => ["displayByGedung"],
+      "except" => ["displayByGedung", 'displayByKamar'],
     ]);
   }
 
@@ -45,5 +45,13 @@ class HomeController extends Controller
   public function displayByGedung($gedung)
   {
     return view("antrian.display-poli", ["gedung" => $gedung]);
+  }
+
+  public function displayByKamar($gedung, $poli)
+  {
+    return view("antrian.display-kamar", [
+      'gedung' => $gedung,
+      "poli" => $poli
+    ]);
   }
 }

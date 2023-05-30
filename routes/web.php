@@ -33,6 +33,11 @@ $router
   ->name("display.poli")
   ->middleware("device.group:display-gedung-poli");
 
+$router
+  ->get("/display-kamar/{gedung}/{poli}", "HomeController@displayByKamar")
+  ->name("display.kamar")
+  ->middleware("device.group:display-gedung-kamar");
+
 //loket-app
 $router->group(["middleware" => ["auth"]], function ($router) {
   $router->get("/", "HomeController@home");
@@ -172,6 +177,19 @@ $router->group(["middleware" => ["auth"]], function ($router) {
   $router->post("poli/list", "PoliController@list");
   $router->post("poli/get/{id}", "PoliController@get");
   $router->post("poli/register", "PoliController@register");
+
+  // Kamar Poli
+  $router->post("kamar/antrian", "KamarController@antrian");
+  $router->post("kamar/next", "KamarController@next");
+  $router->post("kamar/call", "KamarController@call");
+  $router->post("kamar/end", "KamarController@end");
+  $router->post("kamar/attend", "KamarController@attend");
+  $router->post("kamar/rujuk", "KamarController@rujuk");
+  $router->post("kamar/summary-rujuk", "KamarController@summary_rujukan");
+
+  $router->post("kamar/list", "KamarController@list");
+  $router->post("kamar/get/{id}", "KamarController@get");
+  $router->post("kamar/register", "KamarController@register");
 
   $router->post("report/visit", "ReportController@visit");
   $router->post("report/rujukan", "ReportController@rujukan");
