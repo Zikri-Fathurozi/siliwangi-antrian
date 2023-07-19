@@ -2466,6 +2466,7 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
   },
   created: function created() {
     var self = this;
+    console.log(self.id_loket);
     this.ws_connect();
   }
 });
@@ -6565,6 +6566,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     play_audio: function play_audio(params) {
       var _this = this;
+      console.log('params');
+      console.log(params);
       var nomor = params.nomor.toString();
       var time = 0;
       // pembukaan
@@ -6593,6 +6596,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       addTerbilangToSequence(sequence, terbilang);
       if (params.tujuan == "pendaftaran") {
         sequence.push("loket");
+        console.log('masuk pendaftaran');
+        console.log(params.loket);
+        console.log('params.loket');
         if (params.loket) {
           addTerbilangToSequence(sequence, params.loket);
         } else {
@@ -6608,6 +6614,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }
       }
       sequence.forEach(function (name) {
+        console.log('name: ' + name);
         var audioIndex = _this.audios_name.findIndex(function (audioName) {
           return audioName === name;
         });

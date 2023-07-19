@@ -937,6 +937,7 @@ export default {
 
   created() {
     let self = this;
+    console.log(self.id_loket)
     this.ws_connect();
   }
 };

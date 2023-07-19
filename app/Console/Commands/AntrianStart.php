@@ -49,7 +49,7 @@ d88P     888 888  888   Y888 888     888  Y888888 888  888      8888888P     Y88
                                                                                               888          
                                                                                              d88P          
                                                                                            888P            ");
-    $this->call("migrasi:start");
+    // $this->call("migrasi:start");
     $this->call("websocket:start");
   }
 }

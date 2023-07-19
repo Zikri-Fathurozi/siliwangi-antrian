@@ -87,6 +87,8 @@ export default {
     },
 
     play_audio(params) {
+      console.log('params')
+      console.log(params)
       let nomor = params.nomor.toString();
       let time = 0;
       // pembukaan
@@ -117,6 +119,9 @@ export default {
 
       if (params.tujuan == "pendaftaran") {
         sequence.push("loket");
+        console.log('masuk pendaftaran')
+        console.log(params.loket)
+        console.log('params.loket')
         if (params.loket) {
           addTerbilangToSequence(sequence, params.loket);
         } else {
@@ -133,6 +138,7 @@ export default {
       }
 
       sequence.forEach(name => {
+        console.log('name: '+  name)
         const audioIndex = this.audios_name.findIndex(
           audioName => audioName === name
         );

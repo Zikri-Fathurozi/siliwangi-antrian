@@ -2,6 +2,6 @@
 
 @section('content')
 	<loket-pendaftaran-component
-		:id_loket="{{ config('antrian.multi_loket_pendaftaran')? Auth::user()->loket : '0'}}"
+		:id_loket="{{ Auth::user()->loket }}"
 	></loket-pendaftaran-component>
 @endsection

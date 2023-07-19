@@ -1,2 +1,7 @@
 node_modules
 vendor
+.env
+/storage
+/antrean
+/antiran
+/apidb
