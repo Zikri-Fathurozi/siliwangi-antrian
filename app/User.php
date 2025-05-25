@@ -25,6 +25,7 @@ class User extends Authenticatable implements JWTSubject
     "loket",
     "prioritas",
     'tensi',
+    'farmasi',
     'nomor_kamar'
   ];
 

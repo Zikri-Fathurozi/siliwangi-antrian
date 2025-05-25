@@ -1688,6 +1688,381 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/LoketFarmasiComponent.vue?vue&type=script&lang=js&":
+/*!********************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/LoketFarmasiComponent.vue?vue&type=script&lang=js& ***!
+  \********************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var v_mask__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! v-mask */ "./node_modules/v-mask/dist/v-mask.esm.js");
+
+
+
+Vue.use(v_mask__WEBPACK_IMPORTED_MODULE_2__["default"]);
+moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ["id_poli"],
+  data: function data() {
+    return {
+      ws: null,
+      poli: {
+        poli_nama: ""
+      },
+      antri_waiting: [],
+      antri_current: {},
+      antri_completed: [],
+      completed: [],
+      disabled_call: false,
+      total_pendaftar: 0,
+      summary_rujuk: [],
+      total_rujuk: 0,
+      cari: ""
+    };
+  },
+  watch: {
+    cari: function cari(newVal, oldVal) {
+      // watch it
+      if (newVal != "" && this.completed.length > 0) {
+        this.antri_completed = this.completed.filter(function (i) {
+          return i.tiket_farmasi_nomor.toLowerCase().includes(newVal.toLowerCase());
+        });
+      } else {
+        this.antri_completed = this.completed;
+      }
+    },
+    disabled_call: function disabled_call(val) {
+      this.set_disabled_button(val);
+    }
+  },
+  computed: {
+    show_success_attend: function show_success_attend() {
+      return this.antri_current.tiket_farmasi_acceptor != null;
+    },
+    show_attend: function show_attend() {
+      if (this.show_panggil_antrian) {
+        return false;
+      }
+      return this.antri_current.tiket_farmasi_nomor != "-";
+    },
+    show_is_rujuk: function show_is_rujuk() {
+      return this.antri_current.tiket_pasien_dirujuk != 0;
+    },
+    show_panggil_antrian: function show_panggil_antrian() {
+      return this.antri_current.panggil_ulang === 0;
+    },
+    disabled_selesai: function disabled_selesai() {
+      return this.antri_current.panggil_ulang === 0 || this.antri_current.tiket_farmasi_nomor == "-" || this.antri_waiting.length > 0 || this.disabled_call;
+    },
+    disabled_panggil_selanjutnya: function disabled_panggil_selanjutnya() {
+      return this.antri_current.panggil_ulang === 0 || this.antri_waiting.length === 0 || this.disabled_call;
+    },
+    disabled_panggil_ulang: function disabled_panggil_ulang() {
+      return this.antri_current.tiket_farmasi_nomor == "-" || this.disabled_call || this.show_success_attend;
+    }
+  },
+  methods: {
+    save_config: function save_config() {
+      var self = this;
+      axios.post("farmasi/save", {
+        farmasi: this.farmasi
+      }).then(function (response) {
+        if (response.data.res == "SUCCESS") {
+          self.init_data();
+          sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
+            type: "success",
+            title: "Pengaturan berhasil disimpan",
+            showConfirmButton: false,
+            timer: 1000
+          });
+          self.ws.send(JSON.stringify({
+            target: "tiket_dispenser"
+          }));
+        }
+      });
+    },
+    parse_antri: function parse_antri(data) {
+      this.total_pendaftar = 0;
+      this.antri_waiting = [];
+      this.antri_current = {
+        tiket_farmasi_nomor: "-"
+      };
+      this.antri_completed = [];
+      var current = true;
+      var completed = [];
+      for (var x in data) {
+        this.total_pendaftar++;
+        if (data[x].tiket_farmasi_status == 0) {
+          if (current) {
+            this.antri_current = data[x];
+            current = false;
+          } else {
+            this.antri_waiting.push(data[x]);
+          }
+        } else if (data[x].tiket_farmasi_status > 0) {
+          completed.push(data[x]);
+        }
+      }
+      for (var _x = completed.length - 1; _x >= 0; _x--) {
+        this.antri_completed.push(completed[_x]);
+      }
+      this.completed = this.antri_completed;
+    },
+    init_data: function init_data() {
+      var _this = this;
+      var vm = this;
+      axios.post("farmasi/antrian").then(function (response) {
+        return vm.parse_antri(response.data);
+      });
+      axios.post("farmasi/get/" + this.id_poli).then(function (response) {
+        return _this.farmasi = response.data;
+      });
+      axios.post("farmasi/summary-rujuk").then(function (response) {
+        _this.summary_rujuk = response.data.list;
+        _this.total_rujuk = response.data.total;
+      });
+    },
+    call_number: function call_number(number) {
+      this.ws.send(JSON.stringify({
+        target: "display",
+        sub_target: "farmasi",
+        farmasi: this.id_poli,
+        nomor: number
+      }));
+    },
+    panggil_ulang: function panggil_ulang() {
+      var _this2 = this;
+      var nomor = this.antri_current.tiket_farmasi_nomor;
+      this.antri_current.panggil_ulang++;
+      axios.post("farmasi/call", {
+        nomor: nomor,
+        call: this.antri_current.panggil_ulang
+      }).then(function (response) {
+        _this2.call_number(_this2.antri_current.tiket_farmasi_nomor);
+        if (_this2.antri_current.panggil_ulang == 1) {
+          _this2.ws.send(JSON.stringify({
+            target: "display",
+            sub_target: "farmasi",
+            action: "update_summary"
+          }));
+        }
+      });
+      this.set_disabled_button(true);
+    },
+    panggil_selanjutnya: function panggil_selanjutnya() {
+      var _this3 = this;
+      var next = this.antri_waiting[0].tiket_farmasi_nomor;
+      if (this.antri_current.tiket_farmasi_acceptor == null) {
+        var nomor = this.antri_current.tiket_farmasi_nomor;
+        var title = "Konfirmasi";
+        var question = "<b style='color:#FF0000!important'><button type='button' class='btn btn-secondary dropdown-toggle'><i class='fa fa-user-times'></i></button> Tanda pendaftar hadir belum dicentang.</b><br/>Apakah antrian " + nomor + " tidak hadir?<br/><br/>";
+        sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
+          title: title,
+          html: question,
+          width: "60%",
+          showCancelButton: true,
+          cancelButtonText: "Tutup",
+          confirmButtonText: "Ya ".concat(nomor, "  tidak hadir, Panggil nomor selanjutnya (").concat(next, ")")
+        }).then(function (result) {
+          if (result.value) {
+            _this3.set_disabled_button(true);
+            axios.post("farmasi/next", {
+              farmasi: _this3.antri_current,
+              next: next
+            }).then(function (response) {
+              return _this3.call_number(next), _this3.init_data(), _this3.ws.send(JSON.stringify({
+                target: "loket",
+                sub_target: "farmasi",
+                farmasi: _this3.id_poli
+              })), _this3.ws.send(JSON.stringify({
+                target: "tiket_dispenser"
+              })), _this3.ws.send(JSON.stringify({
+                target: "display",
+                sub_target: "farmasi",
+                action: "update_summary"
+              }));
+            });
+          }
+        });
+      } else {
+        this.set_disabled_button(true);
+        axios.post("farmasi/next", {
+          farmasi: this.antri_current,
+          next: next
+        }).then(function (response) {
+          return _this3.call_number(next), _this3.init_data(), _this3.ws.send(JSON.stringify({
+            target: "loket",
+            sub_target: "farmasi",
+            farmasi: _this3.id_poli
+          })), _this3.ws.send(JSON.stringify({
+            target: "tiket_dispenser"
+          })), _this3.ws.send(JSON.stringify({
+            target: "display",
+            sub_target: "farmasi",
+            action: "update_summary"
+          }));
+        });
+      }
+    },
+    selesai: function selesai() {
+      var _this4 = this;
+      if (this.antri_current.tiket_farmasi_acceptor == null) {
+        var nomor = this.antri_current.tiket_farmasi_nomor;
+        var title = "Konfirmasi";
+        var question = "<b style='color:#FF0000!important'><button type='button' class='btn btn-secondary dropdown-toggle'><i class='fa fa-user-times'></i></button> Tanda pendaftar hadir belum dicentang.</b><br/>Apakah antrian " + nomor + " tidak hadir?<br/><br/>";
+        sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
+          title: title,
+          html: question,
+          width: "50%",
+          showCancelButton: true,
+          confirmButtonText: "Ya"
+        }).then(function (result) {
+          if (result.value) {
+            axios.post("farmasi/end", {
+              farmasi: _this4.antri_current
+            }).then(function (response) {
+              return _this4.init_data(), _this4.ws.send(JSON.stringify({
+                target: "loket",
+                sub_target: "farmasi",
+                farmasi: _this4.id_poli
+              })), _this4.ws.send(JSON.stringify({
+                target: "tiket_dispenser"
+              }));
+            });
+          }
+        });
+      } else {
+        axios.post("farmasi/end", {
+          farmasi: this.antri_current
+        }).then(function (response) {
+          return _this4.init_data(), _this4.ws.send(JSON.stringify({
+            target: "loket",
+            sub_target: "farmasi",
+            farmasi: _this4.id_poli
+          })), _this4.ws.send(JSON.stringify({
+            target: "tiket_dispenser"
+          }));
+        });
+      }
+    },
+    set_attend: function set_attend(farmasi, value) {
+      var _this5 = this;
+      var self = this;
+      axios.post("farmasi/attend", {
+        farmasi: farmasi,
+        value: value
+      }).then(function (response) {
+        if (!value) {
+          self.set_rujuk(farmasi, false);
+        }
+        self.init_data();
+        self.ws.send(JSON.stringify({
+          target: "tiket_dispenser"
+        }));
+        self.ws.send(JSON.stringify({
+          target: "loket",
+          sub_target: "farmasi",
+          farmasi: _this5.id_poli
+        }));
+      });
+    },
+    set_rujuk: function set_rujuk(farmasi, value) {
+      var _this6 = this;
+      if (!value && farmasi.tiket_pasien_dirujuk == "0") return false;
+      if (value && farmasi.tiket_pasien_dirujuk == "1") return false;
+      var self = this;
+      axios.post("farmasi/rujuk", {
+        farmasi: farmasi,
+        value: value
+      }).then(function (response) {
+        if (value) {
+          if (farmasi.tiket_farmasi_status != 1) {
+            self.set_attend(farmasi, true);
+          }
+        }
+        self.init_data();
+        self.ws.send(JSON.stringify({
+          target: "tiket_dispenser"
+        }));
+        self.ws.send(JSON.stringify({
+          target: "loket",
+          sub_target: "farmasi",
+          farmasi: _this6.id_poli
+        }));
+      });
+    },
+    ws_error_message: function ws_error_message() {
+      $(".app_panel").LoadingOverlay("show", {
+        image: "",
+        text: "koneksi socket server terputus, hubungi wawicom.",
+        textColor: "#9C9999"
+      });
+    },
+    ws_connect: function ws_connect() {
+      var self = this;
+      this.ws = new WebSocket(document.head.querySelector('meta[name="web-socket"]').content);
+      this.ws.onopen = function () {
+        $(".app_panel").LoadingOverlay("hide", true);
+        self.init_data();
+      };
+      this.ws.onclose = function (e) {
+        self.ws_error_message();
+        setTimeout(function () {
+          self.ws_connect();
+        }, 3000);
+      };
+      this.ws.onerror = function (err) {
+        self.ws_error_message();
+        self.ws.close();
+      };
+      this.ws.onmessage = function (e) {
+        var data = JSON.parse(e.data);
+        console.log(data);
+        if (data.target == "loket") {
+          if (data.action == "refresh_browser") {
+            location.reload(true);
+          }
+          if (data.sub_target == "farmasi") {
+            if (data.gedung == self.farmasi.poli_gedung) {
+              self.disabled_call = data.disabled_call ? true : false;
+            }
+            if (data.action == "add_new") {
+              if (self.btnSelesaiClick) {
+                sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.closeModal();
+              }
+            }
+            if (data.farmasi == self.id_poli) {
+              self.init_data();
+            }
+          }
+        }
+      };
+    },
+    set_disabled_button: function set_disabled_button(bool) {
+      if (bool) {
+        $("#panggil_ulang").attr("disabled", "disabled");
+        $("#panggil_selanjutnya").attr("disabled", "disabled");
+        $("#selesai").attr("disabled", "disabled");
+      } else {
+        $("#panggil_ulang").removeAttr("disabled");
+        if (this.antri_waiting.length > 0) $("#panggil_selanjutnya").removeAttr("disabled");else $("#selesai").removeAttr("disabled");
+      }
+    }
+  },
+  created: function created() {
+    var self = this;
+    this.ws_connect();
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/LoketKamarComponent.vue?vue&type=script&lang=js&":
 /*!******************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/LoketKamarComponent.vue?vue&type=script&lang=js& ***!
@@ -5618,6 +5993,312 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/displays/DisplayFarmasiComponent.vue?vue&type=script&lang=js&":
+/*!*******************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/displays/DisplayFarmasiComponent.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var typed_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! typed.js */ "./node_modules/typed.js/lib/typed.js");
+/* harmony import */ var typed_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(typed_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _elements_PoliComponent_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../elements/PoliComponent.vue */ "./resources/js/components/elements/PoliComponent.vue");
+/* harmony import */ var _elements_BannerComponent_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../elements/BannerComponent.vue */ "./resources/js/components/elements/BannerComponent.vue");
+/* harmony import */ var _elements_BannerIndicatorComponent_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../elements/BannerIndicatorComponent.vue */ "./resources/js/components/elements/BannerIndicatorComponent.vue");
+/* harmony import */ var _elements_VideoComponent_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../elements/VideoComponent.vue */ "./resources/js/components/elements/VideoComponent.vue");
+/* harmony import */ var _elements_AudioComponent_vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../elements/AudioComponent.vue */ "./resources/js/components/elements/AudioComponent.vue");
+/* harmony import */ var _elements_TimeComponent_vue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../elements/TimeComponent.vue */ "./resources/js/components/elements/TimeComponent.vue");
+/* harmony import */ var _commons_HeaderComponent_vue__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../commons/HeaderComponent.vue */ "./resources/js/components/commons/HeaderComponent.vue");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+
+
+
+
+
+var waitFor = function waitFor(ms) {
+  return new Promise(function (r) {
+    return setTimeout(r, ms);
+  });
+};
+function asyncForEach(_x, _x2) {
+  return _asyncForEach.apply(this, arguments);
+}
+function _asyncForEach() {
+  _asyncForEach = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(array, callback) {
+    var index;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) switch (_context3.prev = _context3.next) {
+        case 0:
+          index = 0;
+        case 1:
+          if (!(index < array.length)) {
+            _context3.next = 7;
+            break;
+          }
+          _context3.next = 4;
+          return callback(array[index], index, array);
+        case 4:
+          index++;
+          _context3.next = 1;
+          break;
+        case 7:
+        case "end":
+          return _context3.stop();
+      }
+    }, _callee3);
+  }));
+  return _asyncForEach.apply(this, arguments);
+}
+/* harmony default export */ __webpack_exports__["default"] = ({
+  components: {
+    PoliComponent: _elements_PoliComponent_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
+    BannerComponent: _elements_BannerComponent_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
+    BannerIndicatorComponent: _elements_BannerIndicatorComponent_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
+    VideoComponent: _elements_VideoComponent_vue__WEBPACK_IMPORTED_MODULE_5__["default"],
+    AudioComponent: _elements_AudioComponent_vue__WEBPACK_IMPORTED_MODULE_6__["default"],
+    TimeComponent: _elements_TimeComponent_vue__WEBPACK_IMPORTED_MODULE_7__["default"],
+    HeaderComponent: _commons_HeaderComponent_vue__WEBPACK_IMPORTED_MODULE_8__["default"]
+  },
+  props: ["app_name", "app_address", "poli"],
+  data: function data() {
+    return {
+      base_url: document.head.querySelector('meta[name="base-url"]').content,
+      ws: null,
+      daftar_poli: [],
+      daftar_image: [],
+      daftar_video: [],
+      config: [],
+      info_text: [],
+      audios: "",
+      nomor_daftar: "-",
+      summary: [],
+      queues: [],
+      waitingAudio: 0,
+      isCalling: false,
+      queues_processing: []
+    };
+  },
+  watch: {
+    queues: function () {
+      var _queues = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(val) {
+        var _this = this;
+        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+          while (1) switch (_context2.prev = _context2.next) {
+            case 0:
+              if (!(val.length === 0)) {
+                _context2.next = 2;
+                break;
+              }
+              return _context2.abrupt("return");
+            case 2:
+              val.forEach(function (e) {
+                if (!_this.queues_processing.find(function (p) {
+                  return p.nomor === e.nomor;
+                })) {
+                  _this.queues_processing.push(e);
+                }
+              });
+              if (!this.isCalling) {
+                _context2.next = 6;
+                break;
+              }
+              _context2.next = 6;
+              return waitFor(this.waitingAudio * 1000);
+            case 6:
+              asyncForEach(this.queues_processing, /*#__PURE__*/function () {
+                var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(element) {
+                  var index;
+                  return _regeneratorRuntime().wrap(function _callee$(_context) {
+                    while (1) switch (_context.prev = _context.next) {
+                      case 0:
+                        _this.play_audio(element);
+                        _context.next = 3;
+                        return waitFor(_this.waitingAudio * 1000);
+                      case 3:
+                        index = _this.queues_processing.indexOf(element);
+                        _this.queues_processing.splice(index, 1);
+                      case 5:
+                      case "end":
+                        return _context.stop();
+                    }
+                  }, _callee);
+                }));
+                return function (_x4) {
+                  return _ref.apply(this, arguments);
+                };
+              }());
+              this.queues = [];
+            case 8:
+            case "end":
+              return _context2.stop();
+          }
+        }, _callee2, this);
+      }));
+      function queues(_x3) {
+        return _queues.apply(this, arguments);
+      }
+      return queues;
+    }(),
+    waitingAudio: function waitingAudio(val) {
+      var _this2 = this;
+      if (this.waitingAudio === 0) this.isCalling = false;
+      this.isCalling = true;
+      setTimeout(function () {
+        _this2.isCalling = false;
+        _this2.waitingAudio = 0;
+      }, val * 1000);
+    },
+    isCalling: function isCalling(val) {
+      if (val) {
+        this.disable_tombol_panggil(true);
+      } else {
+        this.disable_tombol_panggil(false);
+      }
+    }
+  },
+  methods: {
+    get_summary: function get_summary() {
+      var _this3 = this;
+      axios.post("api/farmasi/summary", {
+        poli_gedung: this.gedung
+      }).then(function (response) {
+        return _this3.summary = response.data;
+      });
+    },
+    get_display: function get_display() {
+      var _this4 = this;
+      axios.post("api/farmasi/list-display", {
+        poli_gedung: this.gedung
+      }).then(function (response) {
+        return _this4.daftar_poli = response.data;
+      });
+    },
+    init_data: function init_data() {
+      var _this5 = this;
+      this.get_display();
+      this.get_summary();
+      axios.post("api/banner/list-image/1").then(function (response) {
+        return _this5.daftar_image = response.data;
+      });
+      axios.post("api/banner/list-video/1").then(function (response) {
+        return _this5.daftar_video = response.data;
+      });
+      axios.post("api/info/list-display").then(function (response) {
+        return _this5.info_text = response.data, new typed_js__WEBPACK_IMPORTED_MODULE_1___default.a("#info_text", {
+          strings: response.data,
+          typeSpeed: 30,
+          backDelay: 7000,
+          showCursor: false,
+          cursorChar: "",
+          loop: true
+        });
+      });
+      axios.post("api/banner/config").then(function (response) {
+        return _this5.config = response.data;
+      });
+    },
+    disable_tombol_panggil: function disable_tombol_panggil(bool) {
+      this.ws.send(JSON.stringify({
+        target: "loket",
+        sub_target: "poli",
+        gedung: this.gedung,
+        disabled_call: bool
+      }));
+    },
+    ws_error_message: function ws_error_message() {
+      $(".app_panel").LoadingOverlay("show", {
+        image: "",
+        text: "koneksi socket server terputus, hubungi wawicom.",
+        textColor: "#9C9999"
+      });
+    },
+    ws_connect: function ws_connect() {
+      var self = this;
+      this.ws = new WebSocket(document.head.querySelector('meta[name="web-socket"]').content);
+      this.ws.onopen = function () {
+        $(".app_panel").LoadingOverlay("hide", true);
+        self.init_data();
+      };
+      this.ws.onclose = function (e) {
+        self.ws_error_message();
+        setTimeout(function () {
+          self.ws_connect();
+        }, 3000);
+      };
+      this.ws.onerror = function (err) {
+        self.ws_error_message();
+        self.ws.close();
+      };
+      this.ws.onmessage = function (e) {
+        var data = JSON.parse(e.data);
+        if (data.target == "display") {
+          if (data.sub_target == "update_setting") {
+            self.init_data();
+          } else if (data.sub_target == "poli") {
+            if (data.action == "update_summary") {
+              self.get_summary();
+            }
+            if (data.nomor) {
+              if (self.daftar_poli[data.poli]) {
+                // save request audio to queues
+                self.queues.push({
+                  nomor: data.nomor,
+                  poli: self.daftar_poli[data.poli]
+                });
+                self.get_display();
+                self.get_summary();
+              }
+            }
+          }
+          if (data.action == "refresh_browser") {
+            location.reload(true);
+          }
+        }
+      };
+    },
+    play_audio: function play_audio(data) {
+      var nomor = data.nomor,
+        poli = data.poli;
+      //play audio
+      this.waitingAudio = this.$refs.audio.play_audio({
+        tujuan: "poli",
+        poli: poli,
+        nomor: nomor
+      });
+      //end audio
+
+      sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
+        html: "\n          <div class=\"card mb-0\" style=\"background-color:#0f4110\">\n            <div class=\"card-header text-center\">\n              <div class=\"card-body p-0\" style=\"font-size:4em;font-weight:bold;color:#FBC02D\">\n                ".concat(poli.poli_nama, "\n              </div>\n            </div>\n            <div class=\"card-body text-center pt-1\" style=\"background-color:#1A7818;\">\n              <div class=\"display-1 font-weight-bold mb-2 mt-0\" style=\"color:#FFF176;font-size:18em\">\n                ").concat(nomor, "\n              </div>\n              <div class=\"progress progress-sm\">\n                <div class=\"progress-bar bg-yellow\" style=\"width: 100%\"></div>\n              </div>\n            </div>\n          </div>"),
+        width: "80%",
+        padding: "2em",
+        showConfirmButton: false,
+        timer: 10000,
+        animation: false,
+        customClass: {
+          content: "modal-display-antrian"
+        }
+      });
+    }
+  },
+  created: function created() {
+    var self = this;
+    this.ws_connect();
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/displays/DisplayKamarComponent.vue?vue&type=script&lang=js&":
 /*!*****************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/displays/DisplayKamarComponent.vue?vue&type=script&lang=js& ***!
@@ -6799,6 +7480,651 @@ __webpack_require__.r(__webpack_exports__);
     this.nextVideo();
   }
 });
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/LoketFarmasiComponent.vue?vue&type=template&id=b27bfe90&":
+/*!******************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/LoketFarmasiComponent.vue?vue&type=template&id=b27bfe90& ***!
+  \******************************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function render() {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "container app_panel"
+  }, [_c("div", {
+    staticClass: "row row-cards"
+  }, [_c("div", {
+    staticClass: "col-sm-6 col-lg-3"
+  }, [_c("div", {
+    staticClass: "card p-3"
+  }, [_c("div", {
+    staticClass: "d-flex align-items-center"
+  }, [_vm._m(0), _vm._v(" "), _c("div", [_c("h4", {
+    staticClass: "m-0"
+  }, [_vm._v(_vm._s(_vm.poli.poli_nama))])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-sm-6 col-lg-3"
+  }, [_c("div", {
+    staticClass: "card p-3"
+  }, [_c("div", {
+    staticClass: "d-flex align-items-center"
+  }, [_vm._m(1), _vm._v(" "), _c("div", [_c("h4", {
+    staticClass: "m-0"
+  }, [_vm._v("\n              " + _vm._s(_vm.total_pendaftar) + " "), _c("small", [_vm._v("Total Pendaftar")])])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-sm-6 col-lg-3"
+  }, [_c("div", {
+    staticClass: "card p-3"
+  }, [_c("div", {
+    staticClass: "d-flex align-items-center"
+  }, [_vm._m(2), _vm._v(" "), _c("div", [_c("h4", {
+    staticClass: "m-0"
+  }, [_vm._v("\n              " + _vm._s(_vm.antri_waiting.length) + " "), _c("small", [_vm._v("Mengantri")])])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-sm-6 col-lg-3"
+  }, [_c("div", {
+    staticClass: "card p-3"
+  }, [_c("div", {
+    staticClass: "d-flex align-items-center"
+  }, [_vm._m(3), _vm._v(" "), _c("div", [_c("h4", {
+    staticClass: "m-0"
+  }, [_vm._v("\n              " + _vm._s(_vm.antri_completed.length) + " "), _c("small", [_vm._v("Selesai")])])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-md-6 col-lg-3"
+  }, [_c("div", {
+    staticClass: "card"
+  }, [_c("div", {
+    staticClass: "card-status bg-blue"
+  }), _vm._v(" "), _c("div", {
+    staticClass: "card-header"
+  }, [_vm._m(4), _vm._v(" "), _c("div", {
+    staticClass: "card-options"
+  }, [_c("span", {
+    staticClass: "badge badge-danger"
+  }, [_vm._v(_vm._s(_vm.antri_waiting.length))])])]), _vm._v(" "), _c("div", {
+    staticClass: "card-body o-auto",
+    staticStyle: {
+      height: "17.4rem"
+    }
+  }, [_c("ul", {
+    staticClass: "list-unstyled list-separated"
+  }, [_vm._l(_vm.antri_waiting, function (antri, key) {
+    return _c("li", {
+      key: key,
+      staticClass: "list-separated-item"
+    }, [_c("div", {
+      staticClass: "row align-items-center"
+    }, [_c("div", {
+      staticClass: "col"
+    }, [_c("div", [_c("a", {
+      staticClass: "text-inherit"
+    }, [_vm._v("Nomor Antri "), _c("b", [_vm._v(_vm._s(antri.tiket_farmasi_nomor))])])]), _vm._v(" "), _c("small", {
+      staticClass: "d-block item-except text-sm text-muted h-1x"
+    }, [_c("b", [_vm._v("Jam Registrasi :")]), _vm._v(" " + _vm._s(antri.tiket_accepted))])])])]);
+  }), _vm._v(" "), _c("li", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.antri_waiting.length === 0,
+      expression: "antri_waiting.length === 0"
+    }],
+    staticClass: "list-separated-item"
+  }, [_vm._m(5)])], 2)]), _vm._v(" "), _c("div", {
+    staticClass: "card-footer"
+  })])]), _vm._v(" "), _c("div", {
+    staticClass: "col-md-6 col-lg-4"
+  }, [_c("div", {
+    staticClass: "card"
+  }, [_c("div", {
+    staticClass: "card-status bg-yellow"
+  }), _vm._v(" "), _vm._m(6), _vm._v(" "), _c("div", {
+    staticClass: "card-body text-center"
+  }, [_vm.show_success_attend ? _c("h3", {
+    staticStyle: {
+      "font-size": "6.2em",
+      color: "#CCC",
+      margin: "0"
+    }
+  }, [_vm._v("\n            " + _vm._s(_vm.antri_current.tiket_nomor) + "\n          ")]) : _c("h3", {
+    staticStyle: {
+      "font-size": "6.2em",
+      color: "#FFA500",
+      margin: "0"
+    }
+  }, [_vm._v("\n            " + _vm._s(_vm.antri_current.tiket_nomor ? _vm.antri_current.tiket_nomor : "-") + "\n          ")])]), _vm._v(" "), _c("div", {
+    staticClass: "card-footer"
+  }, [_c("div", {
+    staticClass: "row align-items-center"
+  }, [_c("div", {
+    staticClass: "col-6"
+  }, [_c("small", {
+    staticClass: "d-block item-except text-sm m-0"
+  }, [_c("b", [_vm._v("Registrasi :")]), _vm._v("\n                " + _vm._s(_vm.antri_current.tiket_accepted) + "\n              ")])]), _vm._v(" "), _c("div", {
+    staticClass: "col-6"
+  }, [_c("small", {
+    staticClass: "d-block item-except text-sm m-0"
+  }, [_c("b", [_vm._v("Nomor Antri :")]), _vm._v("\n                " + _vm._s(_vm.antri_current.tiket_nomor) + "\n              ")])]), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.show_attend,
+      expression: "show_attend"
+    }],
+    staticClass: "col-6 mt-2"
+  }, [_c("div", {
+    staticClass: "dropdown"
+  }, [_c("button", {
+    staticClass: "btn btn-secondary dropdown-toggle",
+    attrs: {
+      type: "button",
+      "data-toggle": "dropdown",
+      "aria-expanded": "false"
+    }
+  }, [_vm.show_success_attend ? _c("div", {
+    staticClass: "tag tag-success"
+  }, [_vm._v("\n                    hadir\n                    "), _vm._m(7)]) : _c("span", [_vm._v("\n                    Kehadiran\n                  ")]), _vm._v(" "), _vm.show_success_attend ? _c("i", {
+    staticClass: "fa fa-user"
+  }) : _c("i", {
+    staticClass: "fa fa-user-times"
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "dropdown-menu",
+    staticStyle: {
+      position: "absolute",
+      transform: "translate3d(0px, 38px, 0px)",
+      top: "0px",
+      left: "0px",
+      "will-change": "transform"
+    },
+    attrs: {
+      "x-placement": "bottom-start"
+    }
+  }, [_c("div", {
+    staticClass: "dropdown-item disabled"
+  }, [_vm._v("\n                    Apakah pendaftar hadir?\n                  ")]), _vm._v(" "), _c("div", {
+    staticClass: "dropdown-divider"
+  }), _vm._v(" "), _vm.show_success_attend ? _c("a", {
+    staticClass: "dropdown-item",
+    attrs: {
+      href: "javascript:void(0)"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.set_attend(_vm.antri_current, false);
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-close text-danger"
+  }), _vm._v(" Tidak Hadir")]) : _c("a", {
+    staticClass: "dropdown-item",
+    attrs: {
+      href: "javascript:void(0)"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.set_attend(_vm.antri_current, true);
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-check text-success"
+  }), _vm._v(" Ya, Pendaftar\n                    Hadir")])])])]), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.show_attend,
+      expression: "show_attend"
+    }],
+    staticClass: "col-6 mt-2"
+  }, [_c("div", {
+    staticClass: "dropdown"
+  }, [_c("button", {
+    staticClass: "btn btn-secondary dropdown-toggle",
+    attrs: {
+      type: "button",
+      "data-toggle": "dropdown",
+      "aria-expanded": "false"
+    }
+  }, [_vm.show_is_rujuk ? _c("div", {
+    staticClass: "tag tag-info"
+  }, [_vm._v("\n                    Dirujuk\n                    "), _vm._m(8)]) : _c("span", [_vm._v("\n                    Rujukan\n                  ")]), _vm._v(" "), _vm.show_is_rujuk ? _c("i", {
+    staticClass: "fa fa-hospital-o"
+  }) : _c("i", {
+    staticClass: "fa fa-ambulance"
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "dropdown-menu",
+    staticStyle: {
+      position: "absolute",
+      transform: "translate3d(0px, 38px, 0px)",
+      top: "0px",
+      left: "0px",
+      "will-change": "transform"
+    },
+    attrs: {
+      "x-placement": "bottom-start"
+    }
+  }, [_c("div", {
+    staticClass: "dropdown-item disabled"
+  }, [_vm._v("\n                    Apakah pasien dirujuk?\n                  ")]), _vm._v(" "), _c("div", {
+    staticClass: "dropdown-divider"
+  }), _vm._v(" "), _vm.show_is_rujuk ? _c("a", {
+    staticClass: "dropdown-item",
+    attrs: {
+      href: "javascript:void(0)"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.set_rujuk(_vm.antri_current, false);
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-close text-danger"
+  }), _vm._v(" Tidak Dirujuk")]) : _c("a", {
+    staticClass: "dropdown-item",
+    attrs: {
+      href: "javascript:void(0)"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.set_rujuk(_vm.antri_current, true);
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-check text-success"
+  }), _vm._v(" Ya, Pasien\n                    Dirujuk")])])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "card-footer p-3"
+  }, [_c("button", {
+    staticClass: "btn bg-warning",
+    attrs: {
+      type: "button",
+      disabled: _vm.disabled_panggil_ulang,
+      id: "panggil_ulang"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.panggil_ulang();
+      }
+    }
+  }, [_vm.show_panggil_antrian ? _c("span", [_c("i", {
+    staticClass: "fa fa-volume-up"
+  }), _vm._v(" Panggil Antrian")]) : _c("span", [_c("i", {
+    staticClass: "fa fa-refresh"
+  }), _vm._v(" Panggil Ulang ")]), _vm._v(" "), _vm.antri_current.panggil_ulang > 0 ? _c("span", [_vm._v("(" + _vm._s(_vm.antri_current.panggil_ulang) + ")")]) : _vm._e()]), _vm._v(" "), _vm.antri_waiting.length > 0 ? _c("span", [_c("button", {
+    staticClass: "btn btn-success",
+    attrs: {
+      type: "button",
+      disabled: _vm.disabled_panggil_selanjutnya,
+      id: "panggil_selanjutnya"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.panggil_selanjutnya();
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-play mr-2"
+  }), _vm._v("Panggil Selanjutnya\n            ")])]) : _c("span", [_c("button", {
+    staticClass: "btn btn-success",
+    attrs: {
+      type: "button",
+      disabled: _vm.disabled_selesai,
+      id: "selesai"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.selesai();
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-check-circle mr-2"
+  }), _vm._v("Selesai\n            ")])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-md-6 col-lg-3"
+  }, [_c("div", {
+    staticClass: "card"
+  }, [_c("div", {
+    staticClass: "card-status bg-green"
+  }), _vm._v(" "), _c("div", {
+    staticClass: "card-header"
+  }, [_vm._m(9), _vm._v(" "), _c("div", {
+    staticClass: "card-options"
+  }, [_c("span", {
+    staticClass: "badge badge-success"
+  }, [_vm._v(_vm._s(_vm.antri_completed.length))])])]), _vm._v(" "), _c("div", {
+    staticClass: "card-body o-auto",
+    staticStyle: {
+      height: "15rem"
+    }
+  }, [_c("ul", {
+    staticClass: "list-unstyled list-separated"
+  }, [_vm._l(_vm.antri_completed, function (antri, key) {
+    return _c("li", {
+      key: key,
+      staticClass: "list-separated-item"
+    }, [_c("div", {
+      staticClass: "row align-items-center"
+    }, [_c("div", {
+      staticClass: "col"
+    }, [_c("div", [_c("a", {
+      staticClass: "text-inherit",
+      attrs: {
+        title: antri.tiket_farmasi_status == 1 ? "Pendaftar hadir" : "Pendaftar tidak hadir"
+      }
+    }, [_c("i", {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: antri.tiket_farmasi_status == 1,
+        expression: "antri.tiket_farmasi_status == 1"
+      }],
+      staticClass: "fa fa-check-circle text-success"
+    }), _vm._v(" "), _c("i", {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: antri.tiket_farmasi_status == 2,
+        expression: "antri.tiket_farmasi_status == 2"
+      }],
+      staticClass: "fa fa-minus-circle text-danger"
+    }), _vm._v("\n                      Nomor Antri "), _c("b", [_vm._v(_vm._s(antri.tiket_farmasi_nomor))])])]), _vm._v(" "), _c("div", {
+      staticClass: "dropdown pull-right",
+      staticStyle: {
+        "margin-top": "-20px"
+      }
+    }, [_vm._m(10, true), _vm._v(" "), _c("div", {
+      staticClass: "dropdown-menu",
+      staticStyle: {
+        position: "absolute",
+        transform: "translate3d(0px, 38px, 0px)",
+        top: "0px",
+        left: "0px",
+        "will-change": "transform"
+      },
+      attrs: {
+        "x-placement": "bottom-start"
+      }
+    }, [antri.tiket_farmasi_status == 1 ? _c("a", {
+      staticClass: "dropdown-item",
+      attrs: {
+        href: "javascript:void(0)"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.set_attend(antri, false);
+        }
+      }
+    }, [_c("i", {
+      staticClass: "fa fa-close text-danger"
+    }), _vm._v(" Klik, jika\n                        tidak Hadir")]) : _c("a", {
+      staticClass: "dropdown-item",
+      attrs: {
+        href: "javascript:void(0)"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.set_attend(antri, true);
+        }
+      }
+    }, [_c("i", {
+      staticClass: "fa fa-check text-success"
+    }), _vm._v(" Klik, jika\n                        pasien Hadir")]), _vm._v(" "), _c("div", {
+      staticClass: "dropdown-divider"
+    }), _vm._v(" "), antri.tiket_pasien_dirujuk == 1 ? _c("a", {
+      staticClass: "dropdown-item",
+      attrs: {
+        href: "javascript:void(0)"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.set_rujuk(antri, false);
+        }
+      }
+    }, [_c("i", {
+      staticClass: "fa fa-close text-danger"
+    }), _vm._v(" Klik, jika\n                        tidak Dirujuk")]) : _c("a", {
+      staticClass: "dropdown-item",
+      attrs: {
+        href: "javascript:void(0)"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.set_rujuk(antri, true);
+        }
+      }
+    }, [_c("i", {
+      staticClass: "fa fa-check text-success"
+    }), _vm._v(" Klik, jika\n                        pasien Dirujuk")])])]), _vm._v(" "), antri.tiket_farmasi_status == 1 ? _c("small", {
+      staticClass: "d-block item-except text-sm text-muted h-1x"
+    }, [_c("b", [_vm._v("Jam Dilayani :")]), _vm._v("\n                    " + _vm._s(antri.tiket_farmasi_accepted))]) : _c("small", {
+      staticClass: "d-block item-except text-sm text-muted h-1x"
+    }, [_c("b", [_vm._v("Pasien tidak Hadir")])]), _vm._v(" "), antri.tiket_farmasi_status == 1 ? _c("small", {
+      staticClass: "d-block item-except text-sm text-muted h-1x"
+    }, [_c("b", [_vm._v("Dirujuk ")]), _vm._v(":\n                    "), antri.tiket_pasien_dirujuk === "1" ? _c("span", {
+      staticClass: "text-danger"
+    }, [_vm._v("Ya")]) : _c("span", [_vm._v("Tidak")])]) : _vm._e()])])]);
+  }), _vm._v(" "), _c("li", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.antri_completed.length === 0,
+      expression: "antri_completed.length === 0"
+    }],
+    staticClass: "list-separated-item"
+  }, [_c("div", {
+    staticClass: "row align-items-center"
+  }, [_c("div", {
+    staticClass: "col"
+  }, [_c("div", [_c("a", {
+    staticClass: "text-inherit"
+  }, [_c("i", {
+    staticClass: "fa fa-info-circle text-info"
+  }), _vm._v(" "), _vm.cari == "" ? _c("i", [_vm._v("Belum ada antrian selesai.")]) : _c("i", [_vm._v("Nomor Antrian tidak ditemukan.")])])])])])])], 2)]), _vm._v(" "), _c("div", {
+    staticClass: "card-footer"
+  }, [_c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.cari,
+      expression: "cari"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      type: "text",
+      placeholder: "Cari nomor Antrian"
+    },
+    domProps: {
+      value: _vm.cari
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.cari = $event.target.value;
+      }
+    }
+  })])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-md-6 col-lg-2"
+  }, [_c("div", {
+    staticClass: "card"
+  }, [_c("div", {
+    staticClass: "card-status bg-red"
+  }), _vm._v(" "), _vm._m(11), _vm._v(" "), _c("div", {
+    staticClass: "card-body o-auto p-3",
+    staticStyle: {
+      height: "17.4rem"
+    }
+  }, [_c("ul", {
+    staticClass: "list-unstyled list-separated"
+  }, [_vm._l(_vm.summary_rujuk, function (summary, index) {
+    return _c("li", {
+      key: index,
+      staticClass: "p-0"
+    }, [_c("div", {
+      staticClass: "row align-items-center"
+    }, [_c("div", {
+      staticClass: "col"
+    }, [_vm._v("\n                  " + _vm._s(summary.poli_nama) + "\n                ")]), _vm._v(" "), _c("div", {
+      staticClass: "col-auto"
+    }, [_c("b", [_vm._v(_vm._s(summary.total))])])])]);
+  }), _vm._v(" "), _c("li", {
+    staticClass: "p-0"
+  }, [_c("div", {
+    staticClass: "row align-items-center text-primary"
+  }, [_c("div", {
+    staticClass: "col font-weight-bold"
+  }, [_vm._v("\n                  TOTAL\n                ")]), _vm._v(" "), _c("div", {
+    staticClass: "col-auto"
+  }, [_c("b", [_vm._v(_vm._s(_vm.total_rujuk))])])])])], 2), _vm._v(" "), _c("div", {
+    staticClass: "col p-0 mb-0 mt-5"
+  }, [_c("div", {
+    staticClass: "form-group p-0"
+  }, [_c("label", {
+    staticClass: "mb-0"
+  }, [_vm._v("Tutup Pendaftaran :")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "mask",
+      rawName: "v-mask",
+      value: "##:##",
+      expression: "'##:##'"
+    }, {
+      name: "model",
+      rawName: "v-model",
+      value: _vm.poli.poli_closehour,
+      expression: "poli.poli_closehour"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      type: "text",
+      name: "field-name",
+      maxlength: "5",
+      placeholder: "00:00"
+    },
+    domProps: {
+      value: _vm.poli.poli_closehour
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.poli, "poli_closehour", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _c("button", {
+    staticClass: "btn mt-2 btn-sm btn-primary",
+    on: {
+      click: function click($event) {
+        return _vm.save_config();
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-save"
+  }), _vm._v(" Sesuaikan\n              ")])])])]), _vm._v(" "), _c("div", {
+    staticClass: "card-footer"
+  })])])])]);
+};
+var staticRenderFns = [function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("span", {
+    staticClass: "stamp stamp-md bg-blue mr-3"
+  }, [_c("i", {
+    staticClass: "fa fa-home"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("span", {
+    staticClass: "stamp stamp-md bg-yellow mr-3"
+  }, [_c("i", {
+    staticClass: "fa fa-users"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("span", {
+    staticClass: "stamp stamp-md bg-red mr-3"
+  }, [_c("i", {
+    staticClass: "fa fa-stack-overflow"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("span", {
+    staticClass: "stamp stamp-md bg-green mr-3"
+  }, [_c("i", {
+    staticClass: "fa fa-check"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("h3", {
+    staticClass: "card-title"
+  }, [_c("b", [_vm._v("Sedang Mengantri")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "row align-items-center"
+  }, [_c("div", {
+    staticClass: "col"
+  }, [_c("div", [_c("a", {
+    staticClass: "text-inherit"
+  }, [_c("i", {
+    staticClass: "fa fa-check-circle text-success"
+  }), _vm._v(" "), _c("i", [_vm._v("Tidak ada antrian.")])])])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "card-header"
+  }, [_c("h3", {
+    staticClass: "card-title"
+  }, [_c("b", [_vm._v("Antrian Sekarang")])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("span", {
+    staticClass: "tag-addon"
+  }, [_c("i", {
+    staticClass: "fa fa-check"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("span", {
+    staticClass: "tag-addon"
+  }, [_c("i", {
+    staticClass: "fa fa-check"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("h3", {
+    staticClass: "card-title"
+  }, [_c("b", [_vm._v("Selesai")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("button", {
+    staticClass: "btn btn-secondary",
+    attrs: {
+      type: "button",
+      "data-toggle": "dropdown",
+      "aria-expanded": "false"
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-ellipsis-v"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "card-header p-3"
+  }, [_c("h3", {
+    staticClass: "card-title"
+  }, [_c("b", [_vm._v("Info Rujukan")])])]);
+}];
+render._withStripped = true;
+
 
 /***/ }),
 
@@ -14577,6 +15903,167 @@ var render = function render() {
   })])])])]);
 };
 var staticRenderFns = [];
+render._withStripped = true;
+
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/displays/DisplayFarmasiComponent.vue?vue&type=template&id=1b84ff2a&":
+/*!*****************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/displays/DisplayFarmasiComponent.vue?vue&type=template&id=1b84ff2a& ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function render() {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "page"
+  }, [_c("div", [_c("div", {
+    staticClass: "page-main"
+  }, [_c("header-component", {
+    attrs: {
+      app_name: _vm.app_name,
+      app_address: _vm.app_address
+    }
+  }), _vm._v(" "), _c("div", {
+    staticClass: "my-3 my-md-12"
+  }, [_c("div", {
+    staticClass: "container-fluid app_panel"
+  }, [_c("div", {
+    staticClass: "row row-cards"
+  }, [_c("div", {
+    staticClass: "col-lg-7"
+  }, [_c("div", {
+    staticClass: "card p-0"
+  }, [_c("div", {
+    staticClass: "card-body p-2"
+  }, [_vm.config.type == "video" ? _c("video-component", {
+    attrs: {
+      daftar_video: _vm.daftar_video
+    }
+  }) : _vm._e(), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.config.type == "image",
+      expression: "config.type == 'image'"
+    }],
+    staticClass: "carousel-banner slide",
+    attrs: {
+      id: "carousel-indicators",
+      "data-ride": "carousel"
+    }
+  }, [_c("ol", {
+    staticClass: "carousel-indicators"
+  }, _vm._l(_vm.daftar_image, function (banner, index) {
+    return _c("banner-indicator-component", {
+      key: banner.id,
+      attrs: {
+        banner: banner,
+        index: index
+      }
+    });
+  }), 1), _vm._v(" "), _c("div", {
+    staticClass: "carousel-inner"
+  }, _vm._l(_vm.daftar_image, function (banner, index) {
+    return _c("banner-component", {
+      key: banner.id,
+      attrs: {
+        banner: banner,
+        index: index
+      }
+    });
+  }), 1)])], 1)])]), _vm._v(" "), _c("div", {
+    staticClass: "col-md-5"
+  }, [_c("div", {
+    staticClass: "row"
+  }, [_c("div", {
+    staticClass: "col-sm-12"
+  }, [_c("div", {
+    staticClass: "card mb-0",
+    staticStyle: {
+      "background-color": "#0f4110",
+      height: "100vh"
+    }
+  }, [_vm._m(0), _vm._v(" "), _c("table", {
+    staticClass: "table card-table h1 font-weight-bold",
+    staticStyle: {
+      "background-color": "#1A7818",
+      color: "#FFF176",
+      "font-size": "3.7vh"
+    }
+  }, [_vm._m(1), _vm._v(" "), _vm._l(_vm.daftar_poli, function (p, index) {
+    return _c("tr", {
+      key: index
+    }, [_c("td", [_vm._v(_vm._s(p.poli_nama))]), _vm._v(" "), _c("td", {
+      staticClass: "text-right text-white"
+    }, [_vm._v("\n                          " + _vm._s(p.tiket_poli_nomor) + "\n                        ")]), _vm._v(" "), _c("td", {
+      staticClass: "text-right text-white"
+    }, [_vm._v("\n                          " + _vm._s(_vm.summary.find(function (s) {
+      return s.poli_nama == p.poli_nama;
+    }) && _vm.summary.find(function (s) {
+      return s.poli_nama == p.poli_nama;
+    }).sisa) + "\n                        ")])]);
+  })], 2)])])])])])])])], 1), _vm._v(" "), _vm._m(2), _vm._v(" "), _c("footer", {
+    staticClass: "footer cstm_footer_app cstm_footer text-right p-3"
+  }, [_c("h5", [_c("time-component")], 1)]), _vm._v(" "), _c("audio-component", {
+    ref: "audio",
+    attrs: {
+      audios: _vm.audios
+    }
+  })], 1)]);
+};
+var staticRenderFns = [function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "card-header text-center"
+  }, [_c("div", {
+    staticClass: "card-body h1 p-0",
+    staticStyle: {
+      "font-weight": "bold",
+      color: "#FBC02D",
+      "font-size": "4vh"
+    }
+  }, [_vm._v("\n                        ANTRIAN DILAYANI\n                      ")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("tr", [_c("td", {
+    staticStyle: {
+      color: "#FBC02D"
+    }
+  }, [_vm._v("\n                          RUANGAN\n                        ")]), _vm._v(" "), _c("td", {
+    staticClass: "text-right",
+    staticStyle: {
+      color: "#FBC02D"
+    }
+  }, [_vm._v("\n                          NOMOR\n                        ")]), _vm._v(" "), _c("td", {
+    staticClass: "text-right",
+    staticStyle: {
+      color: "#FBC02D"
+    }
+  }, [_vm._v("\n                          SISA\n                        ")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "alert cstm_footer",
+    staticStyle: {
+      background: "#FFF"
+    }
+  }, [_c("span", {
+    attrs: {
+      id: "info_text"
+    }
+  })]);
+}];
 render._withStripped = true;
 
 
@@ -106732,6 +108219,7 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
 Vue.component("loket-pendaftaran-component", __webpack_require__(/*! ./components/LoketPendaftaranComponent.vue */ "./resources/js/components/LoketPendaftaranComponent.vue")["default"]);
+Vue.component("loket-farmasi-component", __webpack_require__(/*! ./components/LoketFarmasiComponent.vue */ "./resources/js/components/LoketFarmasiComponent.vue")["default"]);
 Vue.component("loket-poli-component", __webpack_require__(/*! ./components/LoketPoliComponent.vue */ "./resources/js/components/LoketPoliComponent.vue")["default"]);
 Vue.component("loket-kamar-component", __webpack_require__(/*! ./components/LoketKamarComponent.vue */ "./resources/js/components/LoketKamarComponent.vue")["default"]);
 Vue.component("loket-tensi-component", __webpack_require__(/*! ./components/LoketTensiComponent.vue */ "./resources/js/components/LoketTensiComponent.vue")["default"]);
@@ -106741,6 +108229,7 @@ if (true) {
   Vue.component("display-pendaftaran-component", __webpack_require__(/*! ./components/displays/multiloket/DisplayPendaftaranComponent.vue */ "./resources/js/components/displays/multiloket/DisplayPendaftaranComponent.vue")["default"]);
 } else {}
 Vue.component("display-poli-component", __webpack_require__(/*! ./components/displays/DisplayPoliComponent.vue */ "./resources/js/components/displays/DisplayPoliComponent.vue")["default"]);
+Vue.component("display-farmasi-component", __webpack_require__(/*! ./components/displays/DisplayFarmasiComponent.vue */ "./resources/js/components/displays/DisplayFarmasiComponent.vue")["default"]);
 Vue.component("display-kamar-component", __webpack_require__(/*! ./components/displays/DisplayKamarComponent.vue */ "./resources/js/components/displays/DisplayKamarComponent.vue")["default"]);
 
 //admin
@@ -106846,6 +108335,75 @@ if (base_url) {
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     encrypted: true
 // });
+
+/***/ }),
+
+/***/ "./resources/js/components/LoketFarmasiComponent.vue":
+/*!***********************************************************!*\
+  !*** ./resources/js/components/LoketFarmasiComponent.vue ***!
+  \***********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _LoketFarmasiComponent_vue_vue_type_template_id_b27bfe90___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./LoketFarmasiComponent.vue?vue&type=template&id=b27bfe90& */ "./resources/js/components/LoketFarmasiComponent.vue?vue&type=template&id=b27bfe90&");
+/* harmony import */ var _LoketFarmasiComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./LoketFarmasiComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/LoketFarmasiComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _LoketFarmasiComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _LoketFarmasiComponent_vue_vue_type_template_id_b27bfe90___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _LoketFarmasiComponent_vue_vue_type_template_id_b27bfe90___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/LoketFarmasiComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/LoketFarmasiComponent.vue?vue&type=script&lang=js&":
+/*!************************************************************************************!*\
+  !*** ./resources/js/components/LoketFarmasiComponent.vue?vue&type=script&lang=js& ***!
+  \************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_LoketFarmasiComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./LoketFarmasiComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/LoketFarmasiComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_LoketFarmasiComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/LoketFarmasiComponent.vue?vue&type=template&id=b27bfe90&":
+/*!******************************************************************************************!*\
+  !*** ./resources/js/components/LoketFarmasiComponent.vue?vue&type=template&id=b27bfe90& ***!
+  \******************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_LoketFarmasiComponent_vue_vue_type_template_id_b27bfe90___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!../../../node_modules/vue-loader/lib??vue-loader-options!./LoketFarmasiComponent.vue?vue&type=template&id=b27bfe90& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/LoketFarmasiComponent.vue?vue&type=template&id=b27bfe90&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_LoketFarmasiComponent_vue_vue_type_template_id_b27bfe90___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_LoketFarmasiComponent_vue_vue_type_template_id_b27bfe90___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
 
 /***/ }),
 
@@ -108436,6 +109994,75 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/displays/DisplayFarmasiComponent.vue":
+/*!**********************************************************************!*\
+  !*** ./resources/js/components/displays/DisplayFarmasiComponent.vue ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _DisplayFarmasiComponent_vue_vue_type_template_id_1b84ff2a___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DisplayFarmasiComponent.vue?vue&type=template&id=1b84ff2a& */ "./resources/js/components/displays/DisplayFarmasiComponent.vue?vue&type=template&id=1b84ff2a&");
+/* harmony import */ var _DisplayFarmasiComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DisplayFarmasiComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/displays/DisplayFarmasiComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _DisplayFarmasiComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _DisplayFarmasiComponent_vue_vue_type_template_id_1b84ff2a___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _DisplayFarmasiComponent_vue_vue_type_template_id_1b84ff2a___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/displays/DisplayFarmasiComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/displays/DisplayFarmasiComponent.vue?vue&type=script&lang=js&":
+/*!***********************************************************************************************!*\
+  !*** ./resources/js/components/displays/DisplayFarmasiComponent.vue?vue&type=script&lang=js& ***!
+  \***********************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DisplayFarmasiComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./DisplayFarmasiComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/displays/DisplayFarmasiComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DisplayFarmasiComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/displays/DisplayFarmasiComponent.vue?vue&type=template&id=1b84ff2a&":
+/*!*****************************************************************************************************!*\
+  !*** ./resources/js/components/displays/DisplayFarmasiComponent.vue?vue&type=template&id=1b84ff2a& ***!
+  \*****************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_DisplayFarmasiComponent_vue_vue_type_template_id_1b84ff2a___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!../../../../node_modules/vue-loader/lib??vue-loader-options!./DisplayFarmasiComponent.vue?vue&type=template&id=1b84ff2a& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/displays/DisplayFarmasiComponent.vue?vue&type=template&id=1b84ff2a&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_DisplayFarmasiComponent_vue_vue_type_template_id_1b84ff2a___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_DisplayFarmasiComponent_vue_vue_type_template_id_1b84ff2a___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/components/displays/DisplayKamarComponent.vue":
 /*!********************************************************************!*\
   !*** ./resources/js/components/displays/DisplayKamarComponent.vue ***!
@@ -109151,8 +110778,8 @@ function terbilang(a) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/naufaldwimaulana/Sites/antrean/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/naufaldwimaulana/Sites/antrean/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\xampp\htdocs\siliwangi-antrian\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\xampp\htdocs\siliwangi-antrian\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

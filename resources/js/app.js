@@ -24,6 +24,10 @@ Vue.component(
   require("./components/LoketPendaftaranComponent.vue").default
 );
 Vue.component(
+  "loket-farmasi-component",
+  require("./components/LoketFarmasiComponent.vue").default
+);
+Vue.component(
   "loket-poli-component",
   require("./components/LoketPoliComponent.vue").default
 );
@@ -62,6 +66,11 @@ if (process.env.MIX_MULTILOKET_PENDAFTARAN === "true") {
 Vue.component(
   "display-poli-component",
   require("./components/displays/DisplayPoliComponent.vue").default
+);
+
+Vue.component(
+  "display-farmasi-component",
+  require("./components/displays/DisplayFarmasiComponent.vue").default
 );
 
 Vue.component(

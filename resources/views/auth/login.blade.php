@@ -48,7 +48,8 @@
 <a href="{{ route('ticket.dispensernew') }}" target="_blank" class="tag tag-rounded">Ticket Dispenser New</a> -
 <a href="{{ route('display.pendaftaran') }}" target="_blank" class="tag tag-rounded">Display Pendaftaran</a> -
 <a href="{{ route('display.poli',['gedung'=>1]) }}" target="_blank" class="tag tag-rounded">Display Poli Gedung A</a> -
-<a href="{{ route('display.poli',['gedung'=>2]) }}" target="_blank" class="tag tag-rounded">Display Poli Gedung B</a>
+<a href="{{ route('display.poli',['gedung'=>2]) }}" target="_blank" class="tag tag-rounded">Display Poli Gedung B</a> -
+<a href="{{ route('display.farmasi') }}" target="_blank" class="tag tag-rounded">Display Gedung Farmasi</a> 
 </div>
   
 @endsection

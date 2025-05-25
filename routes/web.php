@@ -33,6 +33,11 @@ $router
   ->name("display.poli")
   ->middleware("device.group:display-gedung-poli");
 
+  $router
+  ->get('/display-farmasi', "FarmasiController1@displayFarmasi")
+  ->name('display.farmasi')
+  ->middleware("device.code:display-farmasi");
+
 $router
   ->get("/display-kamar/{gedung}/{poli}", "HomeController@displayByKamar")
   ->name("display.kamar")
@@ -51,6 +56,10 @@ $router->group(["middleware" => ["auth"]], function ($router) {
     ->view("/loket/poli", "loket.poli")
     ->middleware("role:poli")
     ->name("loket.poli");
+    $router
+    ->view("/loket/farmasi", "loket.farmasi")
+    ->middleware("role:farmasi")
+    ->name("loket.farmasi");
     $router
     ->view("/loket/kamar", "loket.kamar")
     ->middleware("role:kamar")
@@ -122,6 +131,10 @@ $router->group(["middleware" => ["auth"]], function ($router) {
   $router->post("poli/del", "PoliController@del");
   $router->post("poli/save", "PoliController@save");
 
+  $router->post("farmasi/list-all", "FarmasiController@list_all");
+  $router->post("farmasi/del", "FarmasiController@del");
+  $router->post("farmasi/save", "FarmasiController@save");
+
   $router->post("printer/list", "PrinterController@list");
   $router->post("printer/save", "PrinterController@save");
 
@@ -177,6 +190,19 @@ $router->group(["middleware" => ["auth"]], function ($router) {
   $router->post("poli/list", "PoliController@list");
   $router->post("poli/get/{id}", "PoliController@get");
   $router->post("poli/register", "PoliController@register");
+
+    // loket farmasi
+  $router->post("farmasi/antrian", "FarmasiController@antrian");
+  $router->post("farmasi/next", "FarmasiController@next");
+  $router->post("farmasi/call", "FarmasiController@call");
+  $router->post("farmasi/end", "FarmasiController@end");
+  $router->post("farmasi/attend", "FarmasiController@attend");
+  $router->post("farmasi/rujuk", "FarmasiController@rujuk");
+  $router->post("farmasi/summary-rujuk", "FarmasiController@summary_rujukan");
+
+  $router->post("farmasi/list", "FarmasiController@list");
+  $router->post("farmasi/get/{id}", "FarmasiController@get");
+  $router->post("farmasi/register", "FarmasiController@register");
 
   // Kamar Poli
   $router->post("kamar/antrian", "KamarController@antrian");

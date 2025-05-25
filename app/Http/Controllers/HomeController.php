@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Poli;
 
 class HomeController extends Controller
 {
@@ -33,6 +34,8 @@ class HomeController extends Controller
       return redirect()->route("loket.pendaftaran");
     } elseif ($role == "poli") {
       return redirect()->route("loket.poli");
+    } elseif ($role == "farmasi") {
+      return redirect()->route("loket.farmasi");
     } elseif ($role == "tensi") {
       return redirect()->route("loket.tensi");
     } elseif ($role == "kamar") {
