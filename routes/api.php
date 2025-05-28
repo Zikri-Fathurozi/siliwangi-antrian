@@ -35,6 +35,10 @@ $router->post("pendaftaran/summary", "PendaftaranController@summary");
 $router->post("poli/list-display", "PoliController@list_display");
 $router->post("poli/summary", "PoliController@summary");
 
+$router->post("farmasi/list-display", "FarmasiController@list_display");
+$router->post("farmasi/summary", "FarmasiController@summary");
+$router->post("farmasi/nomor-current", "FarmasiController@nomor_current");
+$router->post("farmasi/all-nomor", "FarmasiController@all_nomor");
 $router->post("kamar/list-display", "KamarController@list_display");
 $router->post("banner/list-image/{active}", "BannerController@list_image");
 $router->post(

@@ -6,11 +6,10 @@
           :app_name="app_name"
           :app_address="app_address"
         ></header-component>
-
         <div class="my-3 my-md-12">
           <div class="container-fluid app_panel">
             <div class="row row-cards">
-              <div class="col-lg-7">
+              <div class="col-lg-8">
                 <div class="card p-0">
                   <div class="card-body p-2">
                     <video-component
@@ -46,47 +45,64 @@
                 </div>
               </div>
 
-              <div class="col-md-5">
+              <div class="col-md-4">
                 <div class="row">
                   <div class="col-sm-12">
+                    <div class="card mb-0" style="background-color:#0f4110">
+                      <div class="card-header text-center">
+                        <div
+                          class="card-body h1 p-0"
+                          style="font-weight:bold;color:#FBC02D;font-size:4vh"
+                        >
+                          NOMOR DIPANGGIL
+                        </div>
+                      </div>
+                      <div
+                        class="card-body text-center pt-1"
+                        style="background-color:#1A7818"
+                      >
+                        <div
+                          class="display-1 font-weight-bold mb-2 mt-0"
+                          style="color:#FFF176;font-size:8vh"
+                        >
+                          {{ nomor_daftar }}
+                        </div>
+                        <div class="progress progress-sm">
+                          <div
+                            class="progress-bar bg-yellow"
+                            style="width: 100%"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+
                     <div
-                      class="card mb-0"
-                      style="background-color:#0f4110;height:100vh"
+                      class="card mt-0"
+                      style="background-color:#0f4110;margin-top:-15px!important"
                     >
                       <div class="card-header text-center">
                         <div
                           class="card-body h1 p-0"
                           style="font-weight:bold;color:#FBC02D;font-size:4vh"
                         >
-                          ANTRIAN DILAYANI
+                          ANTRIAN SELANJUTNYA
                         </div>
                       </div>
                       <table
                         class="table card-table h1 font-weight-bold"
-                        style="background-color:#1A7818;color:#FFF176;font-size:3.7vh"
+                        style="background-color:#1A7818;color:#FFF176"
                       >
-                        <tr>
-                          <td style="color:#FBC02D">
-                            RUANGAN
+                        <tr v-for="(s, index) in daftar_nomor" :key="index">
+                          <td>
+                            <span style="font-size:4vh">
+                              {{ s.tiket_farmasi_nomor }}
+                            </span>
                           </td>
-                          <td class="text-right" style="color:#FBC02D">
-                            NOMOR
-                          </td>
-                          <td class="text-right" style="color:#FBC02D">
-                            SISA
-                          </td>
-                        </tr>
-                        <tr v-for="(p, index) in daftar_poli" :key="index">
-                          <td>{{ p.poli_nama }}</td>
-                          <td class="text-right text-white">
-                            {{ p.tiket_poli_nomor }}
-                          </td>
-                          <td class="text-right text-white">
-                            {{
-                              summary.find(s => s.poli_nama == p.poli_nama) &&
-                                summary.find(s => s.poli_nama == p.poli_nama)
-                                  .sisa
-                            }}
+                          <td
+                            class="text-right text-white"
+                            style="font-size:4vh"
+                          >
+                            {{ s.current }}
                           </td>
                         </tr>
                       </table>
@@ -98,17 +114,22 @@
           </div>
         </div>
       </div>
-
-      <div class="alert cstm_footer" style="background:#FFF;">
-        <span id="info_text"></span>
-      </div>
-
-      <footer class="footer cstm_footer_app cstm_footer text-right p-3">
-        <h5><time-component></time-component></h5>
-      </footer>
-
-      <audio-component :audios="audios" ref="audio"></audio-component>
     </div>
+
+    <div class="alert cstm_footer" style="background:#FFF;">
+      <span id="info_text"></span>
+    </div>
+
+    <footer class="footer cstm_footer_app cstm_footer text-right p-3">
+      <h5><time-component></time-component></h5>
+    </footer>
+
+    <audio-component
+      :audios="audios"
+      :loket="loket"
+      :app_multiloket="true"
+      ref="audio"
+    ></audio-component>
   </div>
 </template>
 
@@ -116,13 +137,13 @@
 import Swal from "sweetalert2";
 import Typed from "typed.js";
 
+import HeaderComponent from "../commons/HeaderComponent.vue";
 import PoliComponent from "../elements/PoliComponent.vue";
 import BannerComponent from "../elements/BannerComponent.vue";
 import BannerIndicatorComponent from "../elements/BannerIndicatorComponent.vue";
 import VideoComponent from "../elements/VideoComponent.vue";
 import AudioComponent from "../elements/AudioComponent.vue";
 import TimeComponent from "../elements/TimeComponent.vue";
-import HeaderComponent from "../commons/HeaderComponent.vue";
 
 const waitFor = ms => new Promise(r => setTimeout(r, ms));
 async function asyncForEach(array, callback) {
@@ -133,26 +154,27 @@ async function asyncForEach(array, callback) {
 
 export default {
   components: {
+    HeaderComponent,
     PoliComponent,
     BannerComponent,
     BannerIndicatorComponent,
     VideoComponent,
     AudioComponent,
-    TimeComponent,
-    HeaderComponent
+    TimeComponent
   },
-  props: ["app_name", "app_address", "poli"],
+  props: ["app_name", "app_address"],
   data() {
     return {
       base_url: document.head.querySelector('meta[name="base-url"]').content,
       ws: null,
-      daftar_poli: [],
+      nomor_daftar: "-",
+      daftar_nomor: [],
       daftar_image: [],
       daftar_video: [],
-      config: [],
       info_text: [],
       audios: "",
-      nomor_daftar: "-",
+      loket: "",
+      config: [],
       summary: [],
 
       queues: [],
@@ -206,18 +228,19 @@ export default {
   methods: {
     get_summary() {
       axios
-        .post("api/farmasi/summary", { poli_gedung: this.gedung })
+        .post("api/farmasi/summary")
         .then(response => (this.summary = response.data));
     },
 
-    get_display() {
-      axios
-        .post("api/farmasi/list-display", { poli_gedung: this.gedung })
-        .then(response => (this.daftar_poli = response.data));
-    },
-
     init_data() {
-      this.get_display();
+      axios
+        .post("api/farmasi/nomor-current")
+        .then(response => (this.nomor_daftar = response.data));
+
+      axios
+        .post("api/farmasi/all-nomor")
+        .then(response => (this.daftar_nomor = response.data));
+
       this.get_summary();
 
       axios
@@ -251,8 +274,8 @@ export default {
       this.ws.send(
         JSON.stringify({
           target: "loket",
-          sub_target: "poli",
-          gedung: this.gedung,
+          sub_target: "farmasi",
+          gedung: 1,
           disabled_call: bool
         })
       );
@@ -268,6 +291,7 @@ export default {
 
     ws_connect() {
       let self = this;
+
       this.ws = new WebSocket(
         document.head.querySelector('meta[name="web-socket"]').content
       );
@@ -294,22 +318,20 @@ export default {
         if (data.target == "display") {
           if (data.sub_target == "update_setting") {
             self.init_data();
-          } else if (data.sub_target == "poli") {
+          }
+
+          if (data.sub_target == "farmasi") {
             if (data.action == "update_summary") {
               self.get_summary();
             }
 
             if (data.nomor) {
-              if (self.daftar_poli[data.poli]) {
-                // save request audio to queues
-                self.queues.push({
-                  nomor: data.nomor,
-                  poli: self.daftar_poli[data.poli]
-                });
+              // save request audio to queues
 
-                self.get_display();
-                self.get_summary();
-              }
+              self.queues.push({
+                nomor: data.nomor,
+                loket: data.loket
+              });
             }
           }
 
@@ -321,11 +343,12 @@ export default {
     },
 
     play_audio(data) {
-      const { nomor, poli } = data;
+      const { nomor, loket } = data;
+
       //play audio
       this.waitingAudio = this.$refs.audio.play_audio({
-        tujuan: "poli",
-        poli: poli,
+        tujuan: "farmasi",
+        loket: loket,
         nomor: nomor
       });
       //end audio
@@ -335,22 +358,20 @@ export default {
           <div class="card mb-0" style="background-color:#0f4110">
             <div class="card-header text-center">
               <div class="card-body p-0" style="font-size:4em;font-weight:bold;color:#FBC02D">
-                ${poli.poli_nama}
+                PEMANGGILAN OBAT
               </div>
             </div>
             <div class="card-body text-center pt-1" style="background-color:#1A7818;">
-              <div class="display-1 font-weight-bold mb-2 mt-0" style="color:#FFF176;font-size:18em">
-                ${nomor}
-              </div>
+              <div class="display-1 font-weight-bold mb-2 mt-0" style="color:#FFF176;font-size:18em">${nomor}</div>
               <div class="progress progress-sm">
                 <div class="progress-bar bg-yellow" style="width: 100%"></div>
               </div>
             </div>
           </div>`,
         width: "80%",
-        padding: "2em",
+        padding: "1em",
         showConfirmButton: false,
-        timer: 10000,
+        timer: 9000,
         animation: false,
         customClass: {
           content: "modal-display-antrian"

@@ -23,6 +23,7 @@ class Tiket extends Model
     "tiket_date",
     "tiket_created",
     "tiket_poli_id",
+    "tiket_farmasi_id",
     "tiket_pasien_nik",
     "tiket_pasien_asuransi",
     "tiket_pasien_keluhan",

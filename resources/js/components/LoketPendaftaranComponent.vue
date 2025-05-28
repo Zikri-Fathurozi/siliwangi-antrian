@@ -566,7 +566,10 @@ export default {
 
       axios
         .post("pendaftaran/antrian")
-        .then(response => vm.parse_antri(response.data));
+        .then(response => {
+          console.log(response)
+          vm.parse_antri(response.data)
+        });
 
       axios
         .post("poli/list")
@@ -861,6 +864,7 @@ export default {
 
       this.ws.onmessage = function(e) {
         var data = JSON.parse(e.data);
+        console.log(data)
         if (data.target == "loket") {
           if (data.action == "refresh_browser") {
             location.reload(true);

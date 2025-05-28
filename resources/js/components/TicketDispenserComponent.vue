@@ -116,7 +116,7 @@ Vue.component("button-poli", {
                 <div class="d-flex mt-5 mx-3 mb-2 align-items-center" :class="poli.tutup?'btn-tutup' : ''">                 
                   </span>
                   <div>
-                    <h1 class="m-0 text-white"> <i :class="poli.poli_icon + ' '+ 'text-'+poli.poli_color" ></i> {{poli.poli_nama}}</h1>
+                    <h1 class="m-0 text-white"> <i :class="poli.poli_icon + ' '+ 'text-'+poli.poli_color" ></i>w {{poli.poli_nama}}</h1>
                   </div>
                 </div>
                 
@@ -196,6 +196,9 @@ Vue.component("button-poli", {
     },
 
     choose(poli) {
+      console.log(poli)
+      alert('bentar')
+      return
       if (poli.tutup) return false;
 
       if (poli.poli_prioritas === 1) {
@@ -342,7 +345,7 @@ export default {
       axios
         .post("api/poli/list-menu")
         .then(
-          response => ((self.daftar_poli = response.data), self.check_buka())
+          response => ((self.daftar_poli = response.data), self.check_buka(), console.log(response.data))
         );
 
       axios.post("api/printer/key/tiket").then(response => {

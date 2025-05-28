@@ -34,7 +34,7 @@ $router
   ->middleware("device.group:display-gedung-poli");
 
   $router
-  ->get('/display-farmasi', "FarmasiController1@displayFarmasi")
+  ->get('/display-farmasi', "FarmasiController@displayFarmasi")
   ->name('display.farmasi')
   ->middleware("device.code:display-farmasi");
 

@@ -106,6 +106,9 @@ class PendaftaranController extends BasePendaftaranController
         if ($poli && $poli->poli_tensi_id) {
           $tiket["tiket_tensi_id"] = $poli->poli_tensi_id;
         }
+        if ($poli && $poli->poli_farmasi_id) {
+          $tiket["tiket_farmasi_id"] = $poli->poli_farmasi_id;
+        }
 
         Tiket::insert($tiket);
 

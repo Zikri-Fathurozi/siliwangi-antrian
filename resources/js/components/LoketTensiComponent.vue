@@ -654,7 +654,6 @@ export default {
     },
 
     set_attend(poli, value) {
-      console.log(poli);
       let self = this;
       axios.post("tensi/attend", { poli, value }).then(response => {
         self.init_data();

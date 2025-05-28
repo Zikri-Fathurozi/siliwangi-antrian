@@ -1708,12 +1708,12 @@ __webpack_require__.r(__webpack_exports__);
 Vue.use(v_mask__WEBPACK_IMPORTED_MODULE_2__["default"]);
 moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["id_poli"],
+  props: ["id_farmasi"],
   data: function data() {
     return {
       ws: null,
       poli: {
-        poli_nama: ""
+        poli_nama: "LOKET FARMASI"
       },
       antri_waiting: [],
       antri_current: {},
@@ -1961,6 +1961,10 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
         if (!value) {
           self.set_rujuk(farmasi, false);
         }
+        if (!response) {
+          alert('gagal konfirmasi kehadiran, coba lagi nanti');
+          console.log(response);
+        }
         self.init_data();
         self.ws.send(JSON.stringify({
           target: "tiket_dispenser"
@@ -2023,7 +2027,6 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
       };
       this.ws.onmessage = function (e) {
         var data = JSON.parse(e.data);
-        console.log(data);
         if (data.target == "loket") {
           if (data.action == "refresh_browser") {
             location.reload(true);
@@ -2552,7 +2555,8 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
       var _this = this;
       var vm = this;
       axios.post("pendaftaran/antrian").then(function (response) {
-        return vm.parse_antri(response.data);
+        console.log(response);
+        vm.parse_antri(response.data);
       });
       axios.post("poli/list").then(function (response) {
         return vm.list_poli = response.data.list, vm.total_pendaftar_ulang = response.data.total;
@@ -2799,6 +2803,7 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
       };
       this.ws.onmessage = function (e) {
         var data = JSON.parse(e.data);
+        console.log(data);
         if (data.target == "loket") {
           if (data.action == "refresh_browser") {
             location.reload(true);
@@ -3478,7 +3483,6 @@ moment__WEBPACK_IMPORTED_MODULE_1___default.a.locale("id");
       }
     },
     set_attend: function set_attend(poli, value) {
-      console.log(poli);
       var self = this;
       axios.post("tensi/attend", {
         poli: poli,
@@ -3589,7 +3593,7 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
 moment__WEBPACK_IMPORTED_MODULE_3___default.a.locale("id");
 Vue.component("button-poli", {
   props: ["poli", "polis", "is_prioritas"],
-  template: "<div class=\"col-sm-6 col-md-6 col-poli\" :class=\"Object.keys(polis).length % 4>0? 'col-lg-4' : 'col-lg-6' \" v-if=\"show_poli(poli)\">\n              <div class=\"card btn-poli\"\n                :class=\"'btn_poli'+poli.poli_id + (is_prioritas?' bg-primary' : ' bg-success') + (poli.tutup?' card-disabled' : '')\"\n                @click=\"choose(poli)\">\n                <div class=\"d-flex mt-5 mx-3 mb-2 align-items-center\" :class=\"poli.tutup?'btn-tutup' : ''\">                 \n                  </span>\n                  <div>\n                    <h1 class=\"m-0 text-white\"> <i :class=\"poli.poli_icon + ' '+ 'text-'+poli.poli_color\" ></i> {{poli.poli_nama}}</h1>\n                  </div>\n                </div>\n                \n                <div v-if=\"!poli.tutup\" class=\"card-footer p-0 mx-3 mt-2 pt-1 mb-5\" style=\"border-top: 1px solid rgb(255 255 255 / 52%);\">\n                  <div class=\"row align-items-center pt-2 p-0\">\n                    <div class=\"col text-white font-weight-bold\" v-if=\"poli.poli_deskripsi!=''\">\n                      <span v-html=\"poli.poli_deskripsi\" style=\"font-size:2vh\" ></span>\n                      <span v-if=\"is_prioritas\" class=\"text-warning h3\" style=\"font-size: 2vh\"><br/><br/> <i class=\"fa fa-lightbulb-o\"></i> KHUSUS LANSIA / PRIORITAS</span>\n                      <span v-else><br/></span>\n                    </div>\n                    <div class=\"col\" v-else>\n                      <span v-if=\"is_prioritas\" class=\"text-warning h3\" style=\"font-size: 2vh\"><br/><i class=\"fa fa-lightbulb-o\"></i> KHUSUS LANSIA / PRIORITAS</span>\n                      <span v-else><br/></span>\n                    </div>\n                  </div>\n                </div>\n\n                <div v-else class=\"card-footer p-0 mt-2 pt-1 pb-3\" style=\"border-top: 1px solid rgb(255 255 255 / 52%);background:#fff\">\n                  <div class=\"row align-items-center mx-3 pt-3 p-0\">\n                    <div class=\"col font-weight-bold h4\" style=\"font-size: 2vh\" v-if=\"poli.poli_deskripsi!=''\">\n                      <i class=\"fa fa-info-circle mr-1 text-warning\"></i>\n                      <span v-if=\"poli.buka == 0\">\n                        <span v-if=\"poli.timeout\">\n                          {{poli.poli_deskripsi.toUpperCase()}}\n                        </span>\n                        <span v-else>\n                          HARI INI POLI TUTUP\n                        </span>\n                      </span>\n                      <span v-else>\n                        <span v-if=\"poli.sisa_kuota <= 0\">MAAF KUOTA POLI SUDAH HABIS</span>\n                      </span>\n                      <br/>\n                    </div>\n                  </div>\n                </div>\n\n              </div>\n\t\t\t\t\t\t</div>\n\t\t\t\t  \t",
+  template: "<div class=\"col-sm-6 col-md-6 col-poli\" :class=\"Object.keys(polis).length % 4>0? 'col-lg-4' : 'col-lg-6' \" v-if=\"show_poli(poli)\">\n              <div class=\"card btn-poli\"\n                :class=\"'btn_poli'+poli.poli_id + (is_prioritas?' bg-primary' : ' bg-success') + (poli.tutup?' card-disabled' : '')\"\n                @click=\"choose(poli)\">\n                <div class=\"d-flex mt-5 mx-3 mb-2 align-items-center\" :class=\"poli.tutup?'btn-tutup' : ''\">                 \n                  </span>\n                  <div>\n                    <h1 class=\"m-0 text-white\"> <i :class=\"poli.poli_icon + ' '+ 'text-'+poli.poli_color\" ></i>w {{poli.poli_nama}}</h1>\n                  </div>\n                </div>\n                \n                <div v-if=\"!poli.tutup\" class=\"card-footer p-0 mx-3 mt-2 pt-1 mb-5\" style=\"border-top: 1px solid rgb(255 255 255 / 52%);\">\n                  <div class=\"row align-items-center pt-2 p-0\">\n                    <div class=\"col text-white font-weight-bold\" v-if=\"poli.poli_deskripsi!=''\">\n                      <span v-html=\"poli.poli_deskripsi\" style=\"font-size:2vh\" ></span>\n                      <span v-if=\"is_prioritas\" class=\"text-warning h3\" style=\"font-size: 2vh\"><br/><br/> <i class=\"fa fa-lightbulb-o\"></i> KHUSUS LANSIA / PRIORITAS</span>\n                      <span v-else><br/></span>\n                    </div>\n                    <div class=\"col\" v-else>\n                      <span v-if=\"is_prioritas\" class=\"text-warning h3\" style=\"font-size: 2vh\"><br/><i class=\"fa fa-lightbulb-o\"></i> KHUSUS LANSIA / PRIORITAS</span>\n                      <span v-else><br/></span>\n                    </div>\n                  </div>\n                </div>\n\n                <div v-else class=\"card-footer p-0 mt-2 pt-1 pb-3\" style=\"border-top: 1px solid rgb(255 255 255 / 52%);background:#fff\">\n                  <div class=\"row align-items-center mx-3 pt-3 p-0\">\n                    <div class=\"col font-weight-bold h4\" style=\"font-size: 2vh\" v-if=\"poli.poli_deskripsi!=''\">\n                      <i class=\"fa fa-info-circle mr-1 text-warning\"></i>\n                      <span v-if=\"poli.buka == 0\">\n                        <span v-if=\"poli.timeout\">\n                          {{poli.poli_deskripsi.toUpperCase()}}\n                        </span>\n                        <span v-else>\n                          HARI INI POLI TUTUP\n                        </span>\n                      </span>\n                      <span v-else>\n                        <span v-if=\"poli.sisa_kuota <= 0\">MAAF KUOTA POLI SUDAH HABIS</span>\n                      </span>\n                      <br/>\n                    </div>\n                  </div>\n                </div>\n\n              </div>\n\t\t\t\t\t\t</div>\n\t\t\t\t  \t",
   methods: {
     success_register: function success_register(nomor, poli) {
       var self = this;
@@ -3622,6 +3626,9 @@ Vue.component("button-poli", {
     },
     choose: function choose(poli) {
       var _this = this;
+      console.log(poli);
+      alert('bentar');
+      return;
       if (poli.tutup) return false;
       if (poli.poli_prioritas === 1) {
         //pasien lansia
@@ -3732,7 +3739,7 @@ Vue.component("button-poli", {
       var _this2 = this;
       var self = this;
       axios.post("api/poli/list-menu").then(function (response) {
-        return self.daftar_poli = response.data, self.check_buka();
+        return self.daftar_poli = response.data, self.check_buka(), console.log(response.data);
       });
       axios.post("api/printer/key/tiket").then(function (response) {
         _this2.printer = response.data.res;
@@ -6006,13 +6013,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var typed_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! typed.js */ "./node_modules/typed.js/lib/typed.js");
 /* harmony import */ var typed_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(typed_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _elements_PoliComponent_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../elements/PoliComponent.vue */ "./resources/js/components/elements/PoliComponent.vue");
-/* harmony import */ var _elements_BannerComponent_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../elements/BannerComponent.vue */ "./resources/js/components/elements/BannerComponent.vue");
-/* harmony import */ var _elements_BannerIndicatorComponent_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../elements/BannerIndicatorComponent.vue */ "./resources/js/components/elements/BannerIndicatorComponent.vue");
-/* harmony import */ var _elements_VideoComponent_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../elements/VideoComponent.vue */ "./resources/js/components/elements/VideoComponent.vue");
-/* harmony import */ var _elements_AudioComponent_vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../elements/AudioComponent.vue */ "./resources/js/components/elements/AudioComponent.vue");
-/* harmony import */ var _elements_TimeComponent_vue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../elements/TimeComponent.vue */ "./resources/js/components/elements/TimeComponent.vue");
-/* harmony import */ var _commons_HeaderComponent_vue__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../commons/HeaderComponent.vue */ "./resources/js/components/commons/HeaderComponent.vue");
+/* harmony import */ var _commons_HeaderComponent_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../commons/HeaderComponent.vue */ "./resources/js/components/commons/HeaderComponent.vue");
+/* harmony import */ var _elements_PoliComponent_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../elements/PoliComponent.vue */ "./resources/js/components/elements/PoliComponent.vue");
+/* harmony import */ var _elements_BannerComponent_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../elements/BannerComponent.vue */ "./resources/js/components/elements/BannerComponent.vue");
+/* harmony import */ var _elements_BannerIndicatorComponent_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../elements/BannerIndicatorComponent.vue */ "./resources/js/components/elements/BannerIndicatorComponent.vue");
+/* harmony import */ var _elements_VideoComponent_vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../elements/VideoComponent.vue */ "./resources/js/components/elements/VideoComponent.vue");
+/* harmony import */ var _elements_AudioComponent_vue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../elements/AudioComponent.vue */ "./resources/js/components/elements/AudioComponent.vue");
+/* harmony import */ var _elements_TimeComponent_vue__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../elements/TimeComponent.vue */ "./resources/js/components/elements/TimeComponent.vue");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -6062,26 +6069,27 @@ function _asyncForEach() {
 }
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
-    PoliComponent: _elements_PoliComponent_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
-    BannerComponent: _elements_BannerComponent_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
-    BannerIndicatorComponent: _elements_BannerIndicatorComponent_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
-    VideoComponent: _elements_VideoComponent_vue__WEBPACK_IMPORTED_MODULE_5__["default"],
-    AudioComponent: _elements_AudioComponent_vue__WEBPACK_IMPORTED_MODULE_6__["default"],
-    TimeComponent: _elements_TimeComponent_vue__WEBPACK_IMPORTED_MODULE_7__["default"],
-    HeaderComponent: _commons_HeaderComponent_vue__WEBPACK_IMPORTED_MODULE_8__["default"]
+    HeaderComponent: _commons_HeaderComponent_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
+    PoliComponent: _elements_PoliComponent_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
+    BannerComponent: _elements_BannerComponent_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
+    BannerIndicatorComponent: _elements_BannerIndicatorComponent_vue__WEBPACK_IMPORTED_MODULE_5__["default"],
+    VideoComponent: _elements_VideoComponent_vue__WEBPACK_IMPORTED_MODULE_6__["default"],
+    AudioComponent: _elements_AudioComponent_vue__WEBPACK_IMPORTED_MODULE_7__["default"],
+    TimeComponent: _elements_TimeComponent_vue__WEBPACK_IMPORTED_MODULE_8__["default"]
   },
-  props: ["app_name", "app_address", "poli"],
+  props: ["app_name", "app_address"],
   data: function data() {
     return {
       base_url: document.head.querySelector('meta[name="base-url"]').content,
       ws: null,
-      daftar_poli: [],
+      nomor_daftar: "-",
+      daftar_nomor: [],
       daftar_image: [],
       daftar_video: [],
-      config: [],
       info_text: [],
       audios: "",
-      nomor_daftar: "-",
+      loket: "",
+      config: [],
       summary: [],
       queues: [],
       waitingAudio: 0,
@@ -6170,32 +6178,27 @@ function _asyncForEach() {
   methods: {
     get_summary: function get_summary() {
       var _this3 = this;
-      axios.post("api/farmasi/summary", {
-        poli_gedung: this.gedung
-      }).then(function (response) {
+      axios.post("api/farmasi/summary").then(function (response) {
         return _this3.summary = response.data;
       });
     },
-    get_display: function get_display() {
-      var _this4 = this;
-      axios.post("api/farmasi/list-display", {
-        poli_gedung: this.gedung
-      }).then(function (response) {
-        return _this4.daftar_poli = response.data;
-      });
-    },
     init_data: function init_data() {
-      var _this5 = this;
-      this.get_display();
+      var _this4 = this;
+      axios.post("api/farmasi/nomor-current").then(function (response) {
+        return _this4.nomor_daftar = response.data;
+      });
+      axios.post("api/farmasi/all-nomor").then(function (response) {
+        return _this4.daftar_nomor = response.data;
+      });
       this.get_summary();
       axios.post("api/banner/list-image/1").then(function (response) {
-        return _this5.daftar_image = response.data;
+        return _this4.daftar_image = response.data;
       });
       axios.post("api/banner/list-video/1").then(function (response) {
-        return _this5.daftar_video = response.data;
+        return _this4.daftar_video = response.data;
       });
       axios.post("api/info/list-display").then(function (response) {
-        return _this5.info_text = response.data, new typed_js__WEBPACK_IMPORTED_MODULE_1___default.a("#info_text", {
+        return _this4.info_text = response.data, new typed_js__WEBPACK_IMPORTED_MODULE_1___default.a("#info_text", {
           strings: response.data,
           typeSpeed: 30,
           backDelay: 7000,
@@ -6205,14 +6208,14 @@ function _asyncForEach() {
         });
       });
       axios.post("api/banner/config").then(function (response) {
-        return _this5.config = response.data;
+        return _this4.config = response.data;
       });
     },
     disable_tombol_panggil: function disable_tombol_panggil(bool) {
       this.ws.send(JSON.stringify({
         target: "loket",
-        sub_target: "poli",
-        gedung: this.gedung,
+        sub_target: "farmasi",
+        gedung: 1,
         disabled_call: bool
       }));
     },
@@ -6245,20 +6248,18 @@ function _asyncForEach() {
         if (data.target == "display") {
           if (data.sub_target == "update_setting") {
             self.init_data();
-          } else if (data.sub_target == "poli") {
+          }
+          if (data.sub_target == "farmasi") {
             if (data.action == "update_summary") {
               self.get_summary();
             }
             if (data.nomor) {
-              if (self.daftar_poli[data.poli]) {
-                // save request audio to queues
-                self.queues.push({
-                  nomor: data.nomor,
-                  poli: self.daftar_poli[data.poli]
-                });
-                self.get_display();
-                self.get_summary();
-              }
+              // save request audio to queues
+
+              self.queues.push({
+                nomor: data.nomor,
+                loket: data.loket
+              });
             }
           }
           if (data.action == "refresh_browser") {
@@ -6269,21 +6270,22 @@ function _asyncForEach() {
     },
     play_audio: function play_audio(data) {
       var nomor = data.nomor,
-        poli = data.poli;
+        loket = data.loket;
+
       //play audio
       this.waitingAudio = this.$refs.audio.play_audio({
-        tujuan: "poli",
-        poli: poli,
+        tujuan: "farmasi",
+        loket: loket,
         nomor: nomor
       });
       //end audio
 
       sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
-        html: "\n          <div class=\"card mb-0\" style=\"background-color:#0f4110\">\n            <div class=\"card-header text-center\">\n              <div class=\"card-body p-0\" style=\"font-size:4em;font-weight:bold;color:#FBC02D\">\n                ".concat(poli.poli_nama, "\n              </div>\n            </div>\n            <div class=\"card-body text-center pt-1\" style=\"background-color:#1A7818;\">\n              <div class=\"display-1 font-weight-bold mb-2 mt-0\" style=\"color:#FFF176;font-size:18em\">\n                ").concat(nomor, "\n              </div>\n              <div class=\"progress progress-sm\">\n                <div class=\"progress-bar bg-yellow\" style=\"width: 100%\"></div>\n              </div>\n            </div>\n          </div>"),
+        html: "\n          <div class=\"card mb-0\" style=\"background-color:#0f4110\">\n            <div class=\"card-header text-center\">\n              <div class=\"card-body p-0\" style=\"font-size:4em;font-weight:bold;color:#FBC02D\">\n                PEMANGGILAN OBAT\n              </div>\n            </div>\n            <div class=\"card-body text-center pt-1\" style=\"background-color:#1A7818;\">\n              <div class=\"display-1 font-weight-bold mb-2 mt-0\" style=\"color:#FFF176;font-size:18em\">".concat(nomor, "</div>\n              <div class=\"progress progress-sm\">\n                <div class=\"progress-bar bg-yellow\" style=\"width: 100%\"></div>\n              </div>\n            </div>\n          </div>"),
         width: "80%",
-        padding: "2em",
+        padding: "1em",
         showConfirmButton: false,
-        timer: 10000,
+        timer: 9000,
         animation: false,
         customClass: {
           content: "modal-display-antrian"
@@ -15938,7 +15940,7 @@ var render = function render() {
   }, [_c("div", {
     staticClass: "row row-cards"
   }, [_c("div", {
-    staticClass: "col-lg-7"
+    staticClass: "col-lg-8"
   }, [_c("div", {
     staticClass: "card p-0"
   }, [_c("div", {
@@ -15980,7 +15982,7 @@ var render = function render() {
       }
     });
   }), 1)])], 1)])]), _vm._v(" "), _c("div", {
-    staticClass: "col-md-5"
+    staticClass: "col-md-4"
   }, [_c("div", {
     staticClass: "row"
   }, [_c("div", {
@@ -15988,36 +15990,54 @@ var render = function render() {
   }, [_c("div", {
     staticClass: "card mb-0",
     staticStyle: {
-      "background-color": "#0f4110",
-      height: "100vh"
+      "background-color": "#0f4110"
     }
-  }, [_vm._m(0), _vm._v(" "), _c("table", {
+  }, [_vm._m(0), _vm._v(" "), _c("div", {
+    staticClass: "card-body text-center pt-1",
+    staticStyle: {
+      "background-color": "#1A7818"
+    }
+  }, [_c("div", {
+    staticClass: "display-1 font-weight-bold mb-2 mt-0",
+    staticStyle: {
+      color: "#FFF176",
+      "font-size": "8vh"
+    }
+  }, [_vm._v("\n                        " + _vm._s(_vm.nomor_daftar) + "\n                      ")]), _vm._v(" "), _vm._m(1)])]), _vm._v(" "), _c("div", {
+    staticClass: "card mt-0",
+    staticStyle: {
+      "background-color": "#0f4110",
+      "margin-top": "-15px!important"
+    }
+  }, [_vm._m(2), _vm._v(" "), _c("table", {
     staticClass: "table card-table h1 font-weight-bold",
     staticStyle: {
       "background-color": "#1A7818",
-      color: "#FFF176",
-      "font-size": "3.7vh"
+      color: "#FFF176"
     }
-  }, [_vm._m(1), _vm._v(" "), _vm._l(_vm.daftar_poli, function (p, index) {
+  }, _vm._l(_vm.daftar_nomor, function (s, index) {
     return _c("tr", {
       key: index
-    }, [_c("td", [_vm._v(_vm._s(p.poli_nama))]), _vm._v(" "), _c("td", {
-      staticClass: "text-right text-white"
-    }, [_vm._v("\n                          " + _vm._s(p.tiket_poli_nomor) + "\n                        ")]), _vm._v(" "), _c("td", {
-      staticClass: "text-right text-white"
-    }, [_vm._v("\n                          " + _vm._s(_vm.summary.find(function (s) {
-      return s.poli_nama == p.poli_nama;
-    }) && _vm.summary.find(function (s) {
-      return s.poli_nama == p.poli_nama;
-    }).sisa) + "\n                        ")])]);
-  })], 2)])])])])])])])], 1), _vm._v(" "), _vm._m(2), _vm._v(" "), _c("footer", {
+    }, [_c("td", [_c("span", {
+      staticStyle: {
+        "font-size": "4vh"
+      }
+    }, [_vm._v("\n                            " + _vm._s(s.tiket_farmasi_nomor) + "\n                          ")])]), _vm._v(" "), _c("td", {
+      staticClass: "text-right text-white",
+      staticStyle: {
+        "font-size": "4vh"
+      }
+    }, [_vm._v("\n                          " + _vm._s(s.current) + "\n                        ")])]);
+  }), 0)])])])])])])])], 1)]), _vm._v(" "), _vm._m(3), _vm._v(" "), _c("footer", {
     staticClass: "footer cstm_footer_app cstm_footer text-right p-3"
   }, [_c("h5", [_c("time-component")], 1)]), _vm._v(" "), _c("audio-component", {
     ref: "audio",
     attrs: {
-      audios: _vm.audios
+      audios: _vm.audios,
+      loket: _vm.loket,
+      app_multiloket: true
     }
-  })], 1)]);
+  })], 1);
 };
 var staticRenderFns = [function () {
   var _vm = this,
@@ -16031,25 +16051,31 @@ var staticRenderFns = [function () {
       color: "#FBC02D",
       "font-size": "4vh"
     }
-  }, [_vm._v("\n                        ANTRIAN DILAYANI\n                      ")])]);
+  }, [_vm._v("\n                        NOMOR DIPANGGIL\n                      ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("tr", [_c("td", {
+  return _c("div", {
+    staticClass: "progress progress-sm"
+  }, [_c("div", {
+    staticClass: "progress-bar bg-yellow",
     staticStyle: {
-      color: "#FBC02D"
+      width: "100%"
     }
-  }, [_vm._v("\n                          RUANGAN\n                        ")]), _vm._v(" "), _c("td", {
-    staticClass: "text-right",
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "card-header text-center"
+  }, [_c("div", {
+    staticClass: "card-body h1 p-0",
     staticStyle: {
-      color: "#FBC02D"
+      "font-weight": "bold",
+      color: "#FBC02D",
+      "font-size": "4vh"
     }
-  }, [_vm._v("\n                          NOMOR\n                        ")]), _vm._v(" "), _c("td", {
-    staticClass: "text-right",
-    staticStyle: {
-      color: "#FBC02D"
-    }
-  }, [_vm._v("\n                          SISA\n                        ")])]);
+  }, [_vm._v("\n                        ANTRIAN SELANJUTNYA\n                      ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -110778,8 +110804,8 @@ function terbilang(a) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\xampp\htdocs\siliwangi-antrian\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\xampp\htdocs\siliwangi-antrian\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\justineganteng\pemograman_new\projek\laravel\antrian-laravel\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\justineganteng\pemograman_new\projek\laravel\antrian-laravel\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

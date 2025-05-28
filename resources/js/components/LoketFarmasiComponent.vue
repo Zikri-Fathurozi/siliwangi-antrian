@@ -496,11 +496,11 @@ Vue.use(VueMask);
 moment.locale("id");
 
 export default {
-  props: ["id_poli"],
+  props: ["id_farmasi"],
   data() {
     return {
       ws: null,
-      poli: { poli_nama: "" },
+      poli: { poli_nama: "LOKET FARMASI" },
       antri_waiting: [],
       antri_current: {},
       antri_completed: [],
@@ -802,6 +802,11 @@ export default {
           self.set_rujuk(farmasi, false);
         }
 
+        if (!response) {
+          alert('gagal konfirmasi kehadiran, coba lagi nanti')
+          console.log(response)
+        }
+
         self.init_data();
         self.ws.send(JSON.stringify({ target: "tiket_dispenser" }));
         self.ws.send(
@@ -872,7 +877,6 @@ export default {
 
       this.ws.onmessage = function(e) {
         var data = JSON.parse(e.data);
-        console.log(data);
 
         if (data.target == "loket") {
           if (data.action == "refresh_browser") {

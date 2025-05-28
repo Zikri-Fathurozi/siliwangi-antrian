@@ -255,6 +255,7 @@ class PoliController extends Controller
       $tiket->tiket_acceptor = Auth::user()->id;
       $tiket->tiket_accepted = date("Y-m-d H:i:s");
       $tiket->tiket_poli_nomor = $poli["tiket_nomor"];
+      $tiket->tiket_farmasi_nomor = $poli["tiket_nomor"];
 
       // jika masuk tensi dulu maka nomor tensi juga diisi
       if (!is_null($tiket->tiket_tensi_id)) {
@@ -265,6 +266,7 @@ class PoliController extends Controller
       $tiket->tiket_acceptor = null;
       $tiket->tiket_accepted = null;
       $tiket->tiket_poli_nomor = null;
+      $tiket->tiket_farmasi_nomor = null;
       $tiket->tiket_tensi_nomor = null;
     }
     $tiket->save();
