@@ -198,6 +198,14 @@ export default {
         await waitFor(this.waitingAudio * 1000);
       }
       asyncForEach(this.queues_processing, async element => {
+        // Update display nomor yang sedang dipanggil
+        this.nomor_daftar = element.nomor;
+
+        // display antrian selanjutnya secara otomatis
+        await axios.post("api/farmasi/all-nomor").then(response => {
+          this.daftar_nomor = response.data;
+        });
+
         this.play_audio(element);
         await waitFor(this.waitingAudio * 1000);
         let index = this.queues_processing.indexOf(element);
@@ -315,6 +323,8 @@ export default {
 
       this.ws.onmessage = function(e) {
         var data = JSON.parse(e.data);
+        console.log('data hubung')
+        self.init_data()
         if (data.target == "display") {
           if (data.sub_target == "update_setting") {
             self.init_data();
@@ -383,6 +393,7 @@ export default {
   created() {
     let self = this;
     this.ws_connect();
+    this.init_data();
   }
 };
 </script>

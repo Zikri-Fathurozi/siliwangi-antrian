@@ -6130,13 +6130,22 @@ function _asyncForEach() {
                   return _regeneratorRuntime().wrap(function _callee$(_context) {
                     while (1) switch (_context.prev = _context.next) {
                       case 0:
-                        _this.play_audio(element);
+                        // Update display nomor yang sedang dipanggil
+                        _this.nomor_daftar = element.nomor;
+
+                        // display antrian selanjutnya secara otomatis
                         _context.next = 3;
-                        return waitFor(_this.waitingAudio * 1000);
+                        return axios.post("api/farmasi/all-nomor").then(function (response) {
+                          _this.daftar_nomor = response.data;
+                        });
                       case 3:
+                        _this.play_audio(element);
+                        _context.next = 6;
+                        return waitFor(_this.waitingAudio * 1000);
+                      case 6:
                         index = _this.queues_processing.indexOf(element);
                         _this.queues_processing.splice(index, 1);
-                      case 5:
+                      case 8:
                       case "end":
                         return _context.stop();
                     }
@@ -6245,6 +6254,8 @@ function _asyncForEach() {
       };
       this.ws.onmessage = function (e) {
         var data = JSON.parse(e.data);
+        console.log('data hubung');
+        self.init_data();
         if (data.target == "display") {
           if (data.sub_target == "update_setting") {
             self.init_data();
@@ -6296,6 +6307,7 @@ function _asyncForEach() {
   created: function created() {
     var self = this;
     this.ws_connect();
+    this.init_data();
   }
 });
 
@@ -110024,14 +110036,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************************************************************!*\
   !*** ./resources/js/components/displays/DisplayFarmasiComponent.vue ***!
   \**********************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DisplayFarmasiComponent_vue_vue_type_template_id_1b84ff2a___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DisplayFarmasiComponent.vue?vue&type=template&id=1b84ff2a& */ "./resources/js/components/displays/DisplayFarmasiComponent.vue?vue&type=template&id=1b84ff2a&");
 /* harmony import */ var _DisplayFarmasiComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DisplayFarmasiComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/displays/DisplayFarmasiComponent.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _DisplayFarmasiComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _DisplayFarmasiComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -110061,7 +110074,7 @@ component.options.__file = "resources/js/components/displays/DisplayFarmasiCompo
 /*!***********************************************************************************************!*\
   !*** ./resources/js/components/displays/DisplayFarmasiComponent.vue?vue&type=script&lang=js& ***!
   \***********************************************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
